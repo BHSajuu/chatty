@@ -12,7 +12,6 @@ export const getUsersForSidebar = async (req, res) => {
 
     res.status(200).json(filteredUsers);
   } catch (error) {
-    console.error("Error in getUserForSidebar", error.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -30,7 +29,6 @@ export const getMessages = async (req, res) => {
     });
     res.status(200).json(messages);
   } catch (error) {
-    console.error("Error in getMessages", error.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -43,7 +41,6 @@ export const sendMessage = async (req, res) => {
 
     let imageUrl;
     if (image) {
-      // Upload base64 image to cloudinary
       const uploadResponse = await cloudinary.uploader.upload(image);
       imageUrl = uploadResponse.secure_url;
     }
@@ -64,7 +61,6 @@ export const sendMessage = async (req, res) => {
 
     res.status(200).json(newMessage);
   } catch (error) {
-    console.error("Error in sendMessage", error.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
