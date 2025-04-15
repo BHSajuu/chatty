@@ -24,7 +24,7 @@ Here are some features planned for future implementation:
 - Implement a video calling feature for enhanced communication.
 - Integrate AI suggestions using Google API for smarter interactions.
 - Add a payment gateway to enable premium AI suggestion features.
-- Add a "Forgot Password" recovery link for user accounts.(**<span style="background-color: #4CAF50; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block; text-align: center;">Done</span>**)
+- Add a "Forgot Password" recovery link for user accounts. ✅
 - Display the last message from a user at the top of the sidebar for better conversation tracking.
 - Introduce a message delete option after sending, similar to WhatsApp.
 - Enable voice message sending functionality, inspired by WhatsApp.
