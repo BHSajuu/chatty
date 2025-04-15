@@ -1,12 +1,14 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import nodemailer from "nodemailer";
 import {
   PASSWORD_RESET_REQUEST_TEMPLATE,
   PASSWORD_RESET_SUCCESS_TEMPLATE,
 } from "./emailTemplates.js";
 
-console.log("EMAIL_USER:", process.env.SMTP_USER);
-console.log("EMAIL_PASS:", process.env.SMTP_PASS);
-
+console.log("SMTP_USER in emails.js:", process.env.SMTP_USER);
+console.log("SMTP_PASS in emails.js:", process.env.SMTP_PASS);
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -16,14 +18,19 @@ const transporter = nodemailer.createTransport({
 });
 
 export const sendPasswordResetEmail = async (email, resetURL) => {
-  const recipient = [{ email }];
+  console.log("resetURL:", resetURL);
+  const emailContent = PASSWORD_RESET_REQUEST_TEMPLATE.replace(
+    "{resetURL}",
+    resetURL
+  );
+  console.log("Email Content:", emailContent);
 
   try {
     await transporter.sendMail({
       from: `"Chatty Technical Team" <${process.env.SMTP_USER}>`,
-      to: recipient,
+      to: email,
       subject: "Reset your password",
-      html: PASSWORD_RESET_REQUEST_TEMPLATE.replace("{resetURL}", resetURL),
+      html: emailContent,
     });
   } catch (error) {
     console.error("Error sending password reset email:", error);
@@ -31,12 +38,10 @@ export const sendPasswordResetEmail = async (email, resetURL) => {
 };
 
 export const sendResetSuccessEmail = async (email) => {
-  const recipient = [{ email }];
-
   try {
     await transporter.sendMail({
       from: `"Chatty Technical Team" <${process.env.SMTP_USER}>`,
-      to: recipient,
+      to: email,
       subject: "Password Reset Successful",
       html: PASSWORD_RESET_SUCCESS_TEMPLATE,
     });
