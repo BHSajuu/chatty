@@ -15,6 +15,9 @@ export const useAuthStore = create((set, get) => ({
   onlineUsers: [],
   socket: null,
 
+  isLoading: false,
+  message: null,
+
   checkAuth: async () => {
     try {
       const res = await axiosInstance.get("/auth/check");
@@ -102,5 +105,38 @@ export const useAuthStore = create((set, get) => ({
   },
   disconnectSocket: () => {
     if (get().socket?.connected) get().socket.disconnect();
+  },
+
+  forgotPassword: async (email) => {
+    set({ isLoading: true });
+    try {
+      const response = await axiosInstance.post(`/auth/forgot-password`, {
+        email,
+      });
+      set({ message: response.data.message, isLoading: false });
+    } catch (error) {
+      set({
+        isLoading: false,
+      });
+      toast.error(error.message);
+    }
+  },
+
+  resetPassword: async (token, password) => {
+    set({ isLoading: true });
+    try {
+      const response = await axiosInstance.post(
+        `/auth/reset-password/${token}`,
+        {
+          password,
+        }
+      );
+      set({ message: response.data.message, isLoading: false });
+    } catch (error) {
+      set({
+        isLoading: false,
+      });
+      toast.error(error.message);
+    }
   },
 }));
