@@ -7,8 +7,6 @@ import {
   PASSWORD_RESET_SUCCESS_TEMPLATE,
 } from "./emailTemplates.js";
 
-console.log("SMTP_USER in emails.js:", process.env.SMTP_USER);
-console.log("SMTP_PASS in emails.js:", process.env.SMTP_PASS);
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -18,12 +16,10 @@ const transporter = nodemailer.createTransport({
 });
 
 export const sendPasswordResetEmail = async (email, resetURL) => {
-  console.log("resetURL:", resetURL);
   const emailContent = PASSWORD_RESET_REQUEST_TEMPLATE.replace(
     "{resetURL}",
     resetURL
   );
-  console.log("Email Content:", emailContent);
 
   try {
     await transporter.sendMail({
