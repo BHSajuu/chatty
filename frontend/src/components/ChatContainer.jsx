@@ -97,13 +97,13 @@ const ChatContainer = () => {
                   }  flex items-center`}
               >
                 <div className="flex gap-2">
-                  <Pencil
+                 {message.senderId=== authUser._id &&   <Pencil
                     className="w-5 h-5 text-blue-500 cursor-pointer hover:scale-110 transition-transform"
                     onClick={() => {
                       setEditingMessageId(message._id); // Enter edit mode
                       setEditedText(message.text); // Set the current text in the input
                     }}
-                  />
+                  />}
                   <Trash2
                     className="w-5 h-5 text-red-500 cursor-pointer hover:scale-110 transition-transform"
                     onClick={() => handleDeleteMessage(message._id)}
