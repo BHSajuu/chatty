@@ -64,3 +64,31 @@ export const sendMessage = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+
+export const deleteMessageById = async (req,res) =>{
+   try {
+      const {id} = req.params;
+      const msg= await Message.findByIdAndDelete(id);
+      console.log(msg);
+      res.status(200).json({message:"Message Deleted Successfully"});
+   } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
+    
+   }
+};
+
+export const editMessageById = async (req,res)=>{
+  try {
+     const {id} = req.params;
+     const {text} = req.body;
+     const editedmsg = await Message.findByIdAndUpdate(id,{text},{new:true});
+     console.log(editedmsg);
+     res.status(200).json({message:"Message Edited Successfully"});
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
+    
+  }
+}
+
+// frontend implementation for the edit and delete is not done yet.
