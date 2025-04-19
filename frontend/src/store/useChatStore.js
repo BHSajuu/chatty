@@ -81,5 +81,19 @@ export const useChatStore = create((set, get) => ({
       toast.error(error.response.data.message);
       
     }
+  },
+
+  editMessageText: async (messageId, text)=>{
+    try {
+      const res = await axiosInstance.patch(`/messages/edit/${messageId}`, {text} );
+      set((state) => ({
+        messages: state.messages.map((message) =>
+          message._id === messageId ? { ...message, text:  res.data.editedmsg.text  } : message
+        ),
+      }));
+      toast.success(res.data.message);
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
   }
 }));

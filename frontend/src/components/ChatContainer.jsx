@@ -5,8 +5,8 @@ import { useChatStore } from "../store/useChatStore";
 import ChatHeader from "./ChatHeader";
 import MessageInput from "./MessageInput";
 import MessageSkeleton from "./skeletons/MessageSkeleton";
-import { Pencil, Trash2 } from "lucide-react";
-import toast from "react-hot-toast";
+import { Check, Pencil, Trash2, X } from "lucide-react";
+
 
 const ChatContainer = () => {
   const {
@@ -16,11 +16,15 @@ const ChatContainer = () => {
     selectedUser,
     subscribeToMessages,
     unsubscribeFromMessages,
-    deleteMessage
+    deleteMessage,
+    editMessageText,
   } = useChatStore();
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
+
   const [hover, setHover] = useState(false);
+  const [editingMessageId, setEditingMessageId] = useState(null); // Track the message being edited
+  const [editedText, setEditedText] = useState(""); // Track the updated text
 
 
   useEffect(() => {
@@ -51,25 +55,26 @@ const ChatContainer = () => {
       </div>
     );
   }
- 
- const handleDeleteMessage = async (messageId) =>{
+
+  const handleDeleteMessage = async (messageId) => {
     try {
-       await deleteMessage(messageId);
+      await deleteMessage(messageId);
     } catch (error) {
       console.error("Failed to delete message:", error);
     }
- }
-
-
-const handleEditMeaage = async (messageId,text)=>{
-  try {
-    // toast("Edit message feature is not implemented yet.");
-    await editMessageText(messageId,text);
-  } catch (error) {
-    console.error("Failed to edit message:", error);
-    
   }
-}
+
+
+  const handleEditMessage = async (messageId, text) => {
+    try {
+      await editMessageText(messageId, text); 
+      setEditingMessageId(null); 
+      setEditedText(""); 
+    } catch (error) {
+      console.error("Failed to edit message:", error);
+
+    }
+  }
 
   return (
     <div className="flex-1 flex flex-col overflow-auto">
@@ -79,31 +84,33 @@ const handleEditMeaage = async (messageId,text)=>{
         {messages.map((message) => (
           <div
             onMouseEnter={() => setHover(message._id)}
-            onMouseLeave={()=>{setHover(false)}}
+            onMouseLeave={() => { setHover(false) }}
             key={message._id}
-            className={`relative chat hover:cursor-pointer ${
-              message.senderId === authUser._id ? "chat-end" : "chat-start"
-            }`}
+            className={`relative chat hover:cursor-pointer ${message.senderId === authUser._id ? "chat-end" : "chat-start"
+              }`}
             ref={messageEndRef}>
-          
-           {/* Delete Icon */}
-          {hover === message._id && (
-            <div
-              className={`absolute ${
-                message.senderId === authUser._id ? "right-0 top-1" : "left-0 "
-              }  flex items-center`}
-            > 
-             <div className="flex gap-2">
-             <Pencil className="w-5 h-5 text-blue-500 cursor-pointer hover:scale-110 transition-transform"
-               onClick={()=> handleEditMeaage(message._id)}
-             />
-              <Trash2
-                className="w-5 h-5 text-red-500 cursor-pointer hover:scale-110 transition-transform"
-                onClick={() => handleDeleteMessage(message._id)}
-              />
-             </div>
-            </div>
-          )}
+
+            {/* Delete Icon */}
+            {hover === message._id && (
+              <div
+                className={`absolute ${message.senderId === authUser._id ? "right-0 top-1" : "left-0 "
+                  }  flex items-center`}
+              >
+                <div className="flex gap-2">
+                  <Pencil
+                    className="w-5 h-5 text-blue-500 cursor-pointer hover:scale-110 transition-transform"
+                    onClick={() => {
+                      setEditingMessageId(message._id); // Enter edit mode
+                      setEditedText(message.text); // Set the current text in the input
+                    }}
+                  />
+                  <Trash2
+                    className="w-5 h-5 text-red-500 cursor-pointer hover:scale-110 transition-transform"
+                    onClick={() => handleDeleteMessage(message._id)}
+                  />
+                </div>
+              </div>
+            )}
 
 
 
@@ -132,7 +139,32 @@ const handleEditMeaage = async (messageId,text)=>{
                   className="sm:max-w-[200px] rounded-md mb-2"
                 />
               )}
-              {message.text && <p>{message.text}</p>}
+
+              {editingMessageId === message._id ? (
+                // Render input field if the message is being edited
+                <div className="flex flex-col items-center gap-2">
+                  <input
+                    type="text"
+                    value={editedText}
+                    onChange={(e) => setEditedText(e.target.value)}
+                    className="input input-bordered rounded-lg px-2 py-1 w-full"
+                  />
+                  <div className="flex gap-12">
+                  <Check onClick={() => handleEditMessage(message._id, editedText)}
+                    className="text-blue-500 hover:scale-120 transform-transition ease-in-out" />
+                  < X onClick={() => {
+                    setEditingMessageId(null); 
+                    setEditedText(""); 
+                  }}
+                    className="text-red-500 hover:scale-120 transform-transition ease-in-out " />
+                  </div>
+                </div>
+              ) : (
+                // Render message text if not editing
+                <p>{message.text}</p>
+              )}
+
+              {/* {message.text && <p>{message.text}</p>} */}
             </div>
           </div>
         ))}
