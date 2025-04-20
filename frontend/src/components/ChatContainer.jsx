@@ -67,9 +67,9 @@ const ChatContainer = () => {
 
   const handleEditMessage = async (messageId, text) => {
     try {
-      await editMessageText(messageId, text); 
-      setEditingMessageId(null); 
-      setEditedText(""); 
+      await editMessageText(messageId, text);
+      setEditingMessageId(null);
+      setEditedText("");
     } catch (error) {
       console.error("Failed to edit message:", error);
 
@@ -97,7 +97,7 @@ const ChatContainer = () => {
                   }  flex items-center`}
               >
                 <div className="flex gap-2">
-                 {message.senderId=== authUser._id &&   <Pencil
+                  {message.senderId === authUser._id && <Pencil
                     className="w-5 h-5 text-blue-500 cursor-pointer hover:scale-110 transition-transform"
                     onClick={() => {
                       setEditingMessageId(message._id); // Enter edit mode
@@ -140,6 +140,14 @@ const ChatContainer = () => {
                 />
               )}
 
+              {message.audio && (
+                <audio
+                  src={message.audio}
+                  controls
+                  className="mt-2"
+                />
+              )}
+
               {editingMessageId === message._id ? (
                 // Render input field if the message is being edited
                 <div className="flex flex-col items-center gap-2">
@@ -150,13 +158,13 @@ const ChatContainer = () => {
                     className="input input-bordered rounded-lg px-2 py-1 w-full"
                   />
                   <div className="flex gap-12">
-                  <Check onClick={() => handleEditMessage(message._id, editedText)}
-                    className="text-blue-500 hover:scale-120 transform-transition ease-in-out" />
-                  < X onClick={() => {
-                    setEditingMessageId(null); 
-                    setEditedText(""); 
-                  }}
-                    className="text-red-500 hover:scale-120 transform-transition ease-in-out " />
+                    <Check onClick={() => handleEditMessage(message._id, editedText)}
+                      className="text-blue-500 hover:scale-120 transform-transition ease-in-out" />
+                    < X onClick={() => {
+                      setEditingMessageId(null);
+                      setEditedText("");
+                    }}
+                      className="text-red-500 hover:scale-120 transform-transition ease-in-out " />
                   </div>
                 </div>
               ) : (
