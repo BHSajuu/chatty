@@ -12,7 +12,7 @@ Chatty is a MERN (MongoDB, Express, React, Node.js) based real-time chat applica
 
 ## Tech Stack
 
-- **Frontend**: React,Javascript, Tailwind CSS, DaisyUI, Zustand
+- **Frontend**: React,Javascript, Tailwind CSS, DaisyUI, Zustand, react-media-recorder 
 - **Backend**: Node.js, Express.js
 - **Database**: MongoDB
 - **Real-time Communication**: Socket.IO
