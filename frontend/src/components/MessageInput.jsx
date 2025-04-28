@@ -80,7 +80,7 @@ const MessageInput = () => {
     <div className="p-4 w-full">
       {/* Audio controls or preview */}
       {audioPreview ? (
-        <div className="ml-28 w-md flex items-center gap-2 mb-3 bg-green-100 rounded-lg p-2">
+        <div className="lg:ml-28 w-sd lg:w-md flex items-center gap-2 mb-3 bg-green-400 rounded-lg p-2">
           <audio src={audioPreview} controls className="flex-1" />
           <button
             onClick={cancelAudio}
