@@ -144,7 +144,7 @@ const ChatContainer = () => {
                 <audio
                   src={message.audio}
                   controls
-                  className="mt-2"
+                  className=" mt-2 mr-3 p-1 w-[170px] lg:w-[300px] rounded-lg  "
                 />
               )}
 
