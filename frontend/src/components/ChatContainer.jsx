@@ -131,7 +131,7 @@ const ChatContainer = () => {
                 {formatMessageTime(message.createdAt)}
               </time>
             </div>
-            <div className="chat-bubble flex flex-col">
+            <div className="chat-bubble w-[225px] lg:w-auto flex flex-col">
               {message.image && (
                 <img
                   src={message.image}
@@ -144,7 +144,7 @@ const ChatContainer = () => {
                 <audio
                   src={message.audio}
                   controls
-                  className=" mt-2 mr-3 p-1 w-[170px] lg:w-[300px] rounded-lg  "
+                  className=" mt-2 mr-3 p-1 w-[185px] lg:w-[300px] rounded-lg  "
                 />
               )}
 
