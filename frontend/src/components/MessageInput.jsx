@@ -100,7 +100,7 @@ const MessageInput = () => {
             data-tip="click to start recording"
           >
             <Mic size={20} className={status === "recording" ? "animate-pulse" : ""} />
-          </button>
+          </button>             
           <button
             onClick={stopRecording}
             disabled={status !== "recording"}

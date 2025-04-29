@@ -6,6 +6,7 @@ import ChatHeader from "./ChatHeader";
 import MessageInput from "./MessageInput";
 import MessageSkeleton from "./skeletons/MessageSkeleton";
 import { Check, Pencil, Trash2, X } from "lucide-react";
+import CustomAudioPlayer from "./CustomAudioPlayer";
 
 
 const ChatContainer = () => {
@@ -141,13 +142,10 @@ const ChatContainer = () => {
               )}
 
               {message.audio && (
-                <audio
-                  src={message.audio}
-                  controls
-                  className=" mt-2 mr-3 p-1 w-[180px] lg:w-[300px] rounded-lg  "
-                />
+                <div className="mt-2 mr-3 w-full max-w-[300px]">
+                  <CustomAudioPlayer src={message.audio} />
+                </div>
               )}
-
               {editingMessageId === message._id ? (
                 // Render input field if the message is being edited
                 <div className="flex flex-col items-center gap-2">
