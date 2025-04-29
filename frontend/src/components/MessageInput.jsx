@@ -95,15 +95,17 @@ const MessageInput = () => {
           <button
             onClick={startRecording}
             disabled={status === "recording"}
-            className="btn btn-sm btn-circle btn-primary"
+            className="btn btn-sm btn-circle btn-primary tooltip tooltip-right"
             type="button"
+            data-tip="click to start recording"
           >
             <Mic size={20} className={status === "recording" ? "animate-pulse" : ""} />
           </button>
           <button
             onClick={stopRecording}
             disabled={status !== "recording"}
-            className="btn btn-sm btn-circle btn-secondary"
+            className="btn btn-sm btn-circle btn-secondary tooltip tooltip-right"
+            data-tip="click to stop recording"
             type="button"
           >
             <StopCircle size={20} />
