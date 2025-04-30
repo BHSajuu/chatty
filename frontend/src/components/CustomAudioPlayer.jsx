@@ -2,48 +2,94 @@ import { useEffect, useRef, useState } from "react";
 import { Play, Pause } from "lucide-react";
 
 const CustomAudioPlayer = ({ src }) => {
+  
+
+const audioSrc = src.replace(/\.webm$/, ".mp3");
+
+
   const audioRef = useRef(null);
+  const progressBarRef = useRef(null);
+  const animationRef = useRef(null);
+  
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const progressBarRef = useRef(null);
 
+  // Set up audio event listeners
   useEffect(() => {
     const audio = audioRef.current;
+    if (!audio) return;
     
-    const updateTime = () => setCurrentTime(audio.currentTime);
     const updateDuration = () => {
-      if (isFinite(audio.duration)) {
+      
+      if (isFinite(audio.duration) && audio.duration > 0) {
         setDuration(audio.duration);
       }
     };
-    const handleEnd = () => setIsPlaying(false);
+    
+    const handleEnd = () => {
+      setIsPlaying(false);
+      cancelAnimationFrame(animationRef.current);
+    };
 
-    audio.addEventListener('timeupdate', updateTime);
     audio.addEventListener('loadedmetadata', updateDuration);
     audio.addEventListener('ended', handleEnd);
 
     return () => {
-      audio.removeEventListener('timeupdate', updateTime);
       audio.removeEventListener('loadedmetadata', updateDuration);
       audio.removeEventListener('ended', handleEnd);
+      // Make sure to cancel animation frame on cleanup
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
     };
-  }, []);
+  }, [src]);
+
+  // Animation function for smooth progress updates
+  const animateProgress = () => {
+    if (!audioRef.current || !progressBarRef.current) return;
+    
+    const currentTime = audioRef.current.currentTime;
+    setCurrentTime(currentTime);
+    
+    // Update progress bar width
+    const progressPercent = (currentTime / duration) * 100;
+    if (progressBarRef.current) {
+      progressBarRef.current.style.width = `${progressPercent}%`;
+    }
+    
+    // Continue animation loop
+    animationRef.current = requestAnimationFrame(animateProgress);
+  };
 
   const togglePlayPause = () => {
+    if (!audioRef.current) return;
+    
     if (isPlaying) {
       audioRef.current.pause();
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
+      }
     } else {
       audioRef.current.play();
+      animationRef.current = requestAnimationFrame(animateProgress);
     }
+    
     setIsPlaying(!isPlaying);
   };
 
   const handleTimeChange = (e) => {
     const time = parseFloat(e.target.value);
-    if (!isNaN(time)) {
+    if (!isNaN(time) && audioRef.current) {
       audioRef.current.currentTime = time;
       setCurrentTime(time);
+      
+      // Update progress bar immediately for responsive feel
+      const progressPercent = (time / duration) * 100;
+      if (progressBarRef.current) {
+        progressBarRef.current.style.width = `${progressPercent}%`;
+      }
     }
   };
 
@@ -59,11 +105,12 @@ const CustomAudioPlayer = ({ src }) => {
       <button
         onClick={togglePlayPause}
         className="p-2 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white transition-all duration-300 shadow-lg z-10"
+        aria-label={isPlaying ? "Pause" : "Play"}
       >
         {isPlaying ? (
-          <Pause className="w-5 h-5 fill-current" />
+          <Pause className="w-5 h-5" />
         ) : (
-          <Play className="w-5 h-5 fill-current" />
+          <Play className="w-5 h-5" />
         )}
       </button>
 
@@ -72,11 +119,8 @@ const CustomAudioPlayer = ({ src }) => {
           <div className="relative h-2 bg-gray-200/50 rounded-full overflow-hidden">
             <div
               ref={progressBarRef}
-              className="absolute h-full bg-gradient-to-r from-purple-400 to-blue-400 transition-all duration-100"
-              style={{
-                width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%`,
-                transition: isPlaying ? 'width 0.1s linear' : 'none'
-              }}
+              className="absolute h-full bg-gradient-to-r from-purple-400 to-blue-400"
+              style={{ width: `${(currentTime / duration) * 100}%` }}
             />
             <input
               type="range"
@@ -85,18 +129,19 @@ const CustomAudioPlayer = ({ src }) => {
               value={currentTime}
               onChange={handleTimeChange}
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              aria-label="Seek audio position"
             />
           </div>
         </div>
 
         <div className="absolute bottom-0 right-0">
-          <span className="text-sm text-black font-medium">
-            {formatTime(isPlaying ? currentTime : duration > 0 ? duration : 0)}
+          <span className="text-sm text-white font-medium">
+            {formatTime(currentTime)} / {formatTime(duration)}
           </span>
         </div>
       </div>
 
-      <audio ref={audioRef} src={src} />
+      <audio ref={audioRef} src={audioSrc} preload="metadata" />
     </div>
   );
 };

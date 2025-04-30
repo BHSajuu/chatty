@@ -77,6 +77,9 @@ const ChatContainer = () => {
     }
   }
 
+
+
+  
   return (
     <div className="flex-1 flex flex-col overflow-auto">
       <ChatHeader />
@@ -145,6 +148,7 @@ const ChatContainer = () => {
                 <div className="mt-2 mr-3 w-full max-w-[300px]">
                   <CustomAudioPlayer src={message.audio} />
                 </div>
+          
               )}
               {editingMessageId === message._id ? (
                 // Render input field if the message is being edited
