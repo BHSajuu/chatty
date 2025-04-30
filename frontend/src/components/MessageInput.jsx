@@ -9,6 +9,8 @@ const MessageInput = () => {
   const [text, setText] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
   const [audioPreview, setAudioPreview] = useState(null);
+  const [seconds, setSeconds] = useState(0);
+  const intervalRef = useRef(null);
   const fileInputRef = useRef(null);
   const { sendMessage } = useChatStore();
 
@@ -18,6 +20,18 @@ const MessageInput = () => {
     stopRecording,
     mediaBlobUrl,
   } = useReactMediaRecorder({ audio: true });
+
+  // Start/stop timer when recording status changes
+  useEffect(() => {
+    if (status === "recording") {
+      intervalRef.current = setInterval(() => {
+        setSeconds((s) => s + 1);
+      }, 1000);
+    } else {
+      clearInterval(intervalRef.current);
+    }
+    return () => clearInterval(intervalRef.current);
+  }, [status]);
 
   // When recording stops, set audio preview
   useEffect(() => {
@@ -44,6 +58,7 @@ const MessageInput = () => {
 
   const cancelAudio = () => {
     setAudioPreview(null);
+    setSeconds(0);
   };
 
   const handleSendMessage = async (e) => {
@@ -67,21 +82,31 @@ const MessageInput = () => {
         audio: audioData,
       });
 
-      // Clear all inputs
+      // Clear inputs
       setText("");
       setImagePreview(null);
       setAudioPreview(null);
+      setSeconds(0);
       if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (error) {
       console.error("Failed to send message:", error);
     }
   };
 
+  // Format seconds to MM:SS
+  const fmt = (s) => {
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${m.toString().padStart(2, "0")}:${sec
+      .toString()
+      .padStart(2, "0")}`;
+  };
+
   return (
     <div className="p-4 w-full">
       {/* Audio controls or preview */}
       {audioPreview ? (
-        <div className="lg:ml-28 w-sd lg:w-md flex items-center gap-2 mb-3  rounded-lg p-2">
+        <div className="lg:ml-28 w-sd lg:w-md flex items-center gap-2 mb-3 rounded-lg p-2">
           <CustomAudioPlayer src={audioPreview} controls className="flex-1" />
           <button
             onClick={cancelAudio}
@@ -92,21 +117,37 @@ const MessageInput = () => {
           </button>
         </div>
       ) : (
-        <div className="flex items-center gap-2 mb-3">
+        <div className="relative flex items-center gap-2 mb-3">
+          {/* Timer badge */}
+          {status === "recording" && (
+            <div className="absolute -top-10 left-12 transform -translate-x-1/2 bg-black text-white text-xs font-mono px-2 py-1 rounded-full shadow">
+              {fmt(seconds)}
+            </div>
+          )}
+
+          {/* Mic button */}
           <button
-            onClick={startRecording}
+            onClick={() => {
+              setSeconds(0);
+              startRecording();
+            }}
             disabled={status === "recording"}
             className="btn btn-sm btn-circle btn-primary tooltip tooltip-right"
             type="button"
-            data-tip="click to start recording"
+            data-tip="start recording"
           >
-            <Mic size={20} className={status === "recording" ? "animate-pulse" : ""} />
-          </button>             
+            <Mic
+              size={20}
+              className={status === "recording" ? "animate-pulse" : ""}
+            />
+          </button>
+
+          {/* Stop button */}
           <button
             onClick={stopRecording}
             disabled={status !== "recording"}
             className="btn btn-sm btn-circle btn-secondary tooltip tooltip-right"
-            data-tip="click to stop recording"
+            data-tip="stop recording"
             type="button"
           >
             <StopCircle size={20} />
