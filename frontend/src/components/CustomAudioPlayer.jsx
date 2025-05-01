@@ -104,7 +104,7 @@ const audioSrc = src.replace(/\.webm$/, ".mp3");
     <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-slate-900 to-blue-200 rounded-3xl shadow-sm border border-gray-100 w-full min-w-[160px] md:min-w-[200px] max-w-[320px] group relative">
       <button
         onClick={togglePlayPause}
-        className="p-2 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white transition-all duration-300 shadow-lg z-10"
+        className="p-2 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white transition-all duration-300 shadow-lg z-2"
         aria-label={isPlaying ? "Pause" : "Play"}
       >
         {isPlaying ? (
