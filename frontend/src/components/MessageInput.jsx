@@ -104,76 +104,84 @@ const MessageInput = () => {
 
   return (
     <div className="p-4 w-full">
-      {/* Audio controls or preview */}
-      {audioPreview ? (
-        <div className="lg:ml-28 w-sd lg:w-md flex items-center gap-2 mb-3 rounded-lg p-2">
-          <CustomAudioPlayer src={audioPreview} controls className="flex-1" />
-          <button
-            onClick={cancelAudio}
-            type="button"
-            className="btn btn-sm btn-circle btn-outline text-red-500"
-          >
-            <X size={16} />
-          </button>
-        </div>
-      ) : (
-        <div className="relative flex items-center gap-2 mb-3">
-          {/* Timer badge */}
-          {status === "recording" && (
-            <div className="absolute -top-10 left-12 transform -translate-x-1/2 bg-black text-white text-xs font-mono px-2 py-1 rounded-full shadow">
-              {fmt(seconds)}
-            </div>
-          )}
 
-          {/* Mic button */}
-          <button
-            onClick={() => {
-              setSeconds(0);
-              startRecording();
-            }}
-            disabled={status === "recording"}
-            className="btn btn-sm btn-circle btn-primary tooltip tooltip-right"
-            type="button"
-            data-tip="start recording"
-          >
-            <Mic
-              size={20}
-              className={status === "recording" ? "animate-pulse" : ""}
-            />
-          </button>
 
-          {/* Stop button */}
-          <button
-            onClick={stopRecording}
-            disabled={status !== "recording"}
-            className="btn btn-sm btn-circle btn-secondary tooltip tooltip-right"
-            data-tip="stop recording"
-            type="button"
-          >
-            <StopCircle size={20} />
-          </button>
-        </div>
-      )}
+      <div className="flex flex-row items-center  gap-28">
 
-      {/* Image preview */}
-      {imagePreview && (
-        <div className="mb-3 flex items-center gap-2">
-          <div className="relative">
-            <img
-              src={imagePreview}
-              alt="Preview"
-              className="w-20 h-20 object-cover rounded-lg border border-zinc-700"
-            />
+
+        {/* Audio controls or preview */}
+        {audioPreview ? (
+          <div className="lg:ml-28 w-sd lg:w-md flex items-center gap-2 mb-3 rounded-lg p-2">
+            <CustomAudioPlayer src={audioPreview} controls className="flex-1" />
             <button
-              onClick={removeImage}
-              className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-base-300 flex items-center justify-center"
+              onClick={cancelAudio}
               type="button"
+              className="btn btn-sm btn-circle btn-outline text-red-500"
             >
-              <X className="size-3" />
+              <X size={16} />
             </button>
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="relative flex items-center gap-2 mb-3">
+            {/* Timer badge */}
+            {status === "recording" && (
+              <div className="absolute -top-10 left-12 transform -translate-x-1/2 bg-black text-white text-xs font-mono px-2 py-1 rounded-full shadow">
+                {fmt(seconds)}
+              </div>
+            )}
+
+            {/* Mic button */}
+            <button
+              onClick={() => {
+                setSeconds(0);
+                startRecording();
+              }}
+              disabled={status === "recording"}
+              className="btn btn-sm btn-circle btn-primary tooltip tooltip-right"
+              type="button"
+              data-tip="start recording"
+            >
+              <Mic
+                size={20}
+                className={status === "recording" ? "animate-pulse" : ""}
+              />
+            </button>
+
+            {/* Stop button */}
+            <button
+              onClick={stopRecording}
+              disabled={status !== "recording"}
+              className="btn btn-sm btn-circle btn-secondary tooltip tooltip-right"
+              data-tip="stop recording"
+              type="button"
+            >
+              <StopCircle size={20} />
+            </button>
+          </div>
+        )}
+         
+        {/* Image preview */}
+        {imagePreview && (
+          <div className="mb-3 flex items-center gap-2">
+            <div className="relative">
+              <img
+                src={imagePreview}
+                alt="Preview"
+                className="w-20 h-20 object-cover rounded-lg border border-zinc-700"
+              />
+              <button
+                onClick={removeImage}
+                className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-base-300 flex items-center justify-center"
+                type="button"
+              >
+                <X className="size-3" />
+              </button>
+            </div>
+          </div>
+        )}
+
+      </div>
+
 
       {/* Message input form */}
       <form onSubmit={handleSendMessage} className="flex items-center gap-2">
@@ -195,9 +203,8 @@ const MessageInput = () => {
 
           <button
             type="button"
-            className={`flex btn btn-circle ${
-              imagePreview ? "text-emerald-500" : "text-zinc-400"
-            }`}
+            className={`flex btn btn-circle ${imagePreview ? "text-emerald-500" : "text-zinc-400"
+              }`}
             onClick={() => fileInputRef.current?.click()}
           >
             <Image size={20} />
