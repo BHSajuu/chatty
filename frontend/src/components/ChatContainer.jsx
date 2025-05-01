@@ -7,7 +7,7 @@ import MessageInput from "./MessageInput";
 import MessageSkeleton from "./skeletons/MessageSkeleton";
 import { Check, Pencil, Trash2, X } from "lucide-react";
 import CustomAudioPlayer from "./CustomAudioPlayer";
-import { useNavigate } from "react-router-dom";
+
 
 
 const ChatContainer = () => {
@@ -29,7 +29,7 @@ const ChatContainer = () => {
   const [editedText, setEditedText] = useState(""); // Track the updated text
 
 
-  const navigate = useNavigate();
+
 
   useEffect(() => {
     getMessages(selectedUser._id);
@@ -85,9 +85,9 @@ const ChatContainer = () => {
   
   return (
     <div className="flex-1 flex flex-col overflow-auto">
-      <div onClick={()=> navigate("/profile")}>
+   
       <ChatHeader/>
-      </div>
+      
 
       <div className=" flex-1 overflow-y-auto p-4 space-y-4 relative">
         {messages.map((message) => (
