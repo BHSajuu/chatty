@@ -1,10 +1,12 @@
-import { X } from "lucide-react";
+import { MessageCircleX, X } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
+import { useState } from "react";
 
 const ChatHeader = () => {
   const { selectedUser, setSelectedUser } = useChatStore();
   const { onlineUsers } = useAuthStore();
+  const [open, setOpen] = useState(false);
 
   return (
     <div className="p-2.5 border-b border-base-300">
@@ -27,9 +29,44 @@ const ChatHeader = () => {
           </div>
         </div>
 
-        <button onClick={() => setSelectedUser(null)}>
-          <X />
-        </button>
+        <div className="flex flex-row gap-2 lg:gap-18 items-center">
+          <button className="hidden lg:block btn btn-dash font-stretch-condensed font-light" onClick={() => setOpen(true)}>Clear chat</button>
+          <MessageCircleX className="lg:hidden  " onClick={()=>setOpen(true)} />
+          {open && (
+            <div className="fixed inset-0 flex items-center justify-center  backdrop-blur-sm z-5">
+              <div className="bg-base-200 rounded-2xl shadow-3xl p-6 space-y-4 max-w-sm text-center animate-fade-in">
+                <h4 className="text-lg font-semibold">Clear chat?</h4>
+                <p className="text-sm text-base-content/70">
+                  Are you sure you want to clear the chat?
+                </p>
+                <p className="text-sm text-base-content/70">
+                  This action cannot be undone. Data will be deleted permanently.
+                </p>
+                <div className="flex justify-center gap-4">
+                  <button
+                    className="btn btn-active btn-primary px-6"
+                    onClick={() => {
+                      /* clear chat logic */
+                      setOpen(false);
+                    }}
+                  >
+                    Yes
+                  </button>
+                  <button
+                    className="btn btn-secondary px-6"
+                    onClick={() => setOpen(false)}
+                  >
+                    No
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <button onClick={() => setSelectedUser(null)}>
+            <X />
+          </button>
+        </div>
       </div>
     </div>
   );
