@@ -103,7 +103,17 @@ export const useChatStore = create((set, get) => ({
         headers: { 'Content-Type': 'application/json' },
         data: { senderId, receiverId }
       });
-      toast.success("Chat cleared successfully.", res.data.deletedCount);
+      set({
+        messages: get().messages.filter(msg =>
+          !(
+            (msg.sender === senderId && msg.receiver === receiverId) ||
+            (msg.sender === receiverId && msg.receiver === senderId)
+          )
+        )
+      });
+  
+      toast.success(`Deleted ${res.data.deletedCount} messages`)
+      await get().getMessages(receiverId)   
     } catch (error) {
       toast.error(error.response.data.error);
       
