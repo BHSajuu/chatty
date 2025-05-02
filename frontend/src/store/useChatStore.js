@@ -95,5 +95,21 @@ export const useChatStore = create((set, get) => ({
     } catch (error) {
       toast.error(error.response.data.message);
     }
+  },
+
+  clearChat: async (receiverId, senderId) => {
+    try {
+      const res = await axiosInstance.delete(`/messages/clear`, {
+        headers: { 'Content-Type': 'application/json' },
+        data: { senderId, receiverId }
+      });
+      toast.success("Chat cleared successfully.", res.data.deletedCount);
+    } catch (error) {
+      toast.error(error.response.data.error);
+      
+    }
   }
+
 }));
+
+

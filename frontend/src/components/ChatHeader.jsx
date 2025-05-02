@@ -3,10 +3,24 @@ import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
 import { useState } from "react";
 
+
 const ChatHeader = () => {
-  const { selectedUser, setSelectedUser } = useChatStore();
+  const { selectedUser, setSelectedUser,  clearChat } = useChatStore();
+  const { authUser } = useAuthStore();
   const { onlineUsers } = useAuthStore();
   const [open, setOpen] = useState(false);
+  
+  
+  const handleClearChat = async() => {
+    try {
+      await clearChat(selectedUser._id, authUser._id);
+    } catch (error) {
+      console.error("Error clearing chat:", error);
+    }
+    finally{
+      setOpen(false);
+    }
+  }
 
   return (
     <div className="p-2.5 border-b border-base-300">
@@ -46,10 +60,7 @@ const ChatHeader = () => {
                 <div className="flex justify-center gap-4">
                   <button
                     className="btn btn-active btn-primary px-6"
-                    onClick={() => {
-                      /* clear chat logic */
-                      setOpen(false);
-                    }}
+                    onClick={handleClearChat}
                   >
                     Yes
                   </button>

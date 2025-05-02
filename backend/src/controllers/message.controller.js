@@ -99,3 +99,19 @@ export const editMessageById = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+export const deleteAllMessageById = async (req, res) => {
+  try {
+    const {receiverId, senderId} = req.body;
+    const msg = await Message.deleteMany({
+      $or:[
+        {senderId: senderId, receiverId: receiverId},
+        {senderId: receiverId, receiverId: senderId}
+      ]
+    });
+    res.status(200).json({ deletedCount: msg.deletedCount });
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+    
+  }
+}
