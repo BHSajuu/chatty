@@ -30,8 +30,9 @@ const ChatHeader = () => {
         </div>
 
         <div className="flex flex-row gap-2 lg:gap-18 items-center">
-          <button className="hidden lg:block btn btn-dash font-stretch-condensed font-light" onClick={() => setOpen(true)}>Clear chat</button>
-          <MessageCircleX className="lg:hidden  " onClick={()=>setOpen(true)} />
+           <button className="tooltip tooltip-bottom" data-tip="Clear chat" type="button">
+           <MessageCircleX  onClick={()=>setOpen(true)} />
+           </button>
           {open && (
             <div className="fixed inset-0 flex items-center justify-center  backdrop-blur-sm z-5">
               <div className="bg-base-200 rounded-2xl shadow-3xl p-6 space-y-4 max-w-sm text-center animate-fade-in">
