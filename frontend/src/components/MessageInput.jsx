@@ -103,7 +103,7 @@ const MessageInput = () => {
   };
 
   return (
-    <div className="py-5 md:py-0 my-5 px-3 md:p-4 w-full md:relative fixed bottom-0">
+    <div className=" py-1  px-3 md:p-4 w-full md:relative fixed bottom-0">
 
 
       <div className="flex flex-row items-center  gap-28">
