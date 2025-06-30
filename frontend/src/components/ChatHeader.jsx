@@ -1,4 +1,4 @@
-import { MessageCircleX, X } from "lucide-react";
+import { MessageCircleX, Video, X } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
 import { useState } from "react";
@@ -44,7 +44,10 @@ const ChatHeader = () => {
         </div>
 
         <div className="flex flex-row gap-8 lg:gap-18 items-center">
-           <button className="tooltip tooltip-bottom" data-tip="Clear chat" type="button">
+           <button className="tooltip tooltip-left hover:cursor-pointer" data-tip="Video call" type="button">
+             <Video  />
+           </button>
+           <button className="tooltip tooltip-left hover:cursor-pointer" data-tip="Clear chat" type="button">
            <MessageCircleX  onClick={()=>setOpen(true)} />
            </button>
           {open && (
@@ -76,7 +79,7 @@ const ChatHeader = () => {
           )}
 
           <button onClick={() => setSelectedUser(null)}>
-            <X />
+            <X className="hover:cursor-pointer" />
           </button>
         </div>
       </div>
