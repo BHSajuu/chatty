@@ -23,7 +23,7 @@ const ChatHeader = () => {
   }
 
   return (
-    <div className=" p-2.5  border-b border-base-300 fixed w-full top-16 z-40 backdrop-blur-3xl md:w-auto md:relative md:top-0 md:z-0">
+    <div className=" p-2.5  border-b border-base-300 fixed w-full top-2 z-40 backdrop-blur-3xl md:w-auto md:relative md:top-0 md:z-0">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="avatar">
