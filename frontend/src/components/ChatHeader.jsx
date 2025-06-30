@@ -23,7 +23,7 @@ const ChatHeader = () => {
   }
 
   return (
-    <div className="p-2.5 border-b border-base-300">
+    <div className=" p-2.5  border-b border-base-300 fixed w-full top-20 z-40 backdrop-blur-3xl md:w-auto md:relative md:top-0 md:z-0">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="avatar">
@@ -43,7 +43,7 @@ const ChatHeader = () => {
           </div>
         </div>
 
-        <div className="flex flex-row gap-2 lg:gap-18 items-center">
+        <div className="flex flex-row gap-8 lg:gap-18 items-center">
            <button className="tooltip tooltip-bottom" data-tip="Clear chat" type="button">
            <MessageCircleX  onClick={()=>setOpen(true)} />
            </button>
