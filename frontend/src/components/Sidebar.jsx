@@ -22,8 +22,8 @@ const Sidebar = () => {
   if (isUsersLoading) return <SidebarSkeleton />;
 
   return (
-    <aside className="h-full w-full lg:w-72 border-r border-base-300 flex flex-col transition-all duration-200">
-      <div className="border-b border-base-300 w-full p-5">
+    <aside className="h-full w-full lg:w-96 border-r border-base-300 flex flex-col transition-all duration-200">
+      <div className="border-b border-base-300 w-full p-5 ">
         <div className="flex items-center gap-2">
           <Users className="size-6" />
           <span className="font-medium ">Contacts</span>
@@ -45,13 +45,13 @@ const Sidebar = () => {
         </div>
       </div>
 
-      <div className="overflow-y-auto w-full py-3">
+      <div className="overflow-y-auto w-full py-3 px-4 lg:px-0 flex flex-col items-left gap-3 md:gap-4">
         {filteredUsers.map((user) => (
           <button
             key={user._id}
             onClick={() => setSelectedUser(user)}
             className={`
-              w-full p-3 mx-3 rounded-2xl flex items-center gap-3
+              w-full  md:w-[340px] p-3 md:mx-3 rounded-2xl flex items-center gap-3
               hover:bg-base-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-300/30 transition-all
               ${
                 selectedUser?._id === user._id
