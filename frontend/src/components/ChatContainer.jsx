@@ -87,7 +87,7 @@ const ChatContainer = () => {
       <ChatHeader />
 
 
-      <div className=" flex-1 overflow-scroll lg:overflow-y-auto py-8 px-4  md:p-4 space-y-4 lg:relative">
+      <div className=" flex-1  overflow-y-auto pt-8 pb-20 md:mb-0 px-4  md:p-4 space-y-4 relative">
         {messages.map((message) => (
           <div
             onMouseEnter={() => setHover(message._id)}
