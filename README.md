@@ -23,6 +23,9 @@ Here are some features planned for future implementation:
 
 - Implement a video calling feature for enhanced communication.
 - Integrate AI suggestions using Google API for smarter interactions.
+    - Language translation & localization
+    - Smart suggestions & auto‑completion
+    - Taling with Vapi
 - Add a payment gateway to enable premium AI suggestion features.
 - Add a "Forgot Password" recovery link for user accounts. ✅
 - Display the last message from a user at the top of the sidebar for better conversation tracking.
