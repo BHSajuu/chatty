@@ -36,7 +36,7 @@ const ChatHeader = () => {
   };
 
   return (
-    <div className=" p-2.5  border-b border-base-300 fixed w-full top-2 z-40 backdrop-blur-3xl md:w-auto md:relative md:top-0 md:z-0">
+    <div className=" p-2.5  border-b border-base-300 fixed w-full top-2 z-40 backdrop-blur-3xl md:w-auto md:relative md:top-0 ">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="avatar">
@@ -66,7 +66,7 @@ const ChatHeader = () => {
             <MessageCircleX onClick={() => setOpen(true)} />
           </button>
           {open && (
-            <div className="fixed inset-0 flex items-center justify-center  backdrop-blur-sm z-5">
+            <div className="fixed top-32 right-3 md:left-0 flex items-center justify-center  backdrop-blur-sm z-5">
               <div className="bg-base-200 rounded-2xl shadow-3xl p-6 space-y-4 max-w-sm text-center animate-fade-in">
                 <h4 className="text-lg font-semibold">Clear chat?</h4>
                 <p className="text-sm text-base-content/70">

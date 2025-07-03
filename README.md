@@ -35,4 +35,4 @@ Here are some features planned for future implementation:
 - Display the last message from a user at the top of the sidebar for better conversation tracking.
 - Introduce a message delete and edit option after sending, similar to WhatsApp.✅
 - Enable voice message sending functionality, inspired by WhatsApp.✅
-
+- Add feature that user can able to invite his friend via whatApp just by entering his friend whatApp number
