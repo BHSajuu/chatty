@@ -21,7 +21,10 @@ Chatty is a MERN (MongoDB, Express, React, Node.js) based real-time chat applica
 
 Here are some features planned for future implementation:
 
-- Implement a video calling feature for enhanced communication.
+- Implement a video calling feature for enhanced communication.✅
+    - done but need improvement in :
+        - when a user send the joining link to oppsite user , then autmotically the joing invitation link send twice.
+        - The Call room layout for mobile is not setup correctly.
 - Integrate AI suggestions using Google API for smarter interactions.
     - Language translation & localization
     - Smart suggestions & auto‑completion
