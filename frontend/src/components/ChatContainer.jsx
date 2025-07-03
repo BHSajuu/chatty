@@ -7,7 +7,7 @@ import MessageInput from "./MessageInput";
 import MessageSkeleton from "./skeletons/MessageSkeleton";
 import { Check, Pencil, Trash2, X } from "lucide-react";
 import CustomAudioPlayer from "./CustomAudioPlayer";
-
+import Linkify from 'react-linkify';
 
 
 const ChatContainer = () => {
@@ -151,7 +151,7 @@ const ChatContainer = () => {
                 <div className="mt-2 mr-3 w-full max-w-[300px]">
                   <CustomAudioPlayer src={message.audio} />
                 </div>
-          
+
               )}
               {editingMessageId === message._id ? (
                 // Render input field if the message is being edited
@@ -174,7 +174,21 @@ const ChatContainer = () => {
                 </div>
               ) : (
                 // Render message text if not editing
-                <p>{message.text}</p>
+                <Linkify
+                  componentDecorator={(decoratedHref, decoratedText, key) => (
+                    <a
+                      href={decoratedHref}
+                      key={key}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 underline hover:text-blue-700"
+                    >
+                      {decoratedText}
+                    </a>
+                  )}
+                >
+                  <p>{message.text}</p>
+                </Linkify>
               )}
 
               {/* {message.text && <p>{message.text}</p>} */}
