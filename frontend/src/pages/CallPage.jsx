@@ -9,6 +9,7 @@ import {
   StreamTheme,
   CallingState,
   useCallStateHooks,
+  PaginatedGridLayout,
 } from "@stream-io/video-react-sdk";
 import "@stream-io/video-react-sdk/dist/css/styles.css";
 import toast from "react-hot-toast";
@@ -29,11 +30,11 @@ function CallPage() {
   const { isLoading, authUser } = useAuthStore();
 
 
-const tokenProvider = async () => {
+  const tokenProvider = async () => {
     try {
       const res = await axiosInstance.get("/video/token");
       console.log(res.data);
-      const {token} = res.data;
+      const { token } = res.data;
       return token;
     } catch (error) {
       console.error(error);
@@ -81,7 +82,7 @@ const tokenProvider = async () => {
   }, [authUser, callId]);
 
   if (isLoading || isConnecting) return (
-    
+
     <div className="flex items-center justify-center h-screen">
       {console.log("loadinf only")}
       <Loader className="size-10 animate-spin" />
@@ -115,9 +116,17 @@ const CallContent = () => {
 
   if (callingState === CallingState.LEFT) return navigate("/");
 
+  // Hook to detect mobile vs. large screen
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+
   return (
     <StreamTheme>
-      <SpeakerLayout />
+      {isMobile ? <PaginatedGridLayout /> : <SpeakerLayout />}
       <CallControls />
     </StreamTheme>
   );
