@@ -28,7 +28,7 @@ const ChatHeader = () => {
     const callUrl = `${window.location.origin}/call/${callId}`;
      // Send video call link as a message
       await sendMessage({
-        text: `📹 Video Call Invitation from ${selectedUser.fullName}:- ${callUrl}`,
+        text: `📹 Video Call Invitation from ${authUser.fullName}:- ${callUrl}`,
         image: null,
         audio: null,
       });
