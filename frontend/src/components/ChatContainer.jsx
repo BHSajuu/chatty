@@ -92,13 +92,12 @@ const ChatContainer = () => {
       <div className="flex-1 overflow-y-scroll pt-8 pb-20 md:mb-0 px-4 md:p-4 space-y-4 md:relative">
         {messages.map((message) => (
           <div
+            key={message._id}
             onMouseEnter={() => setHover(message._id)}
             onMouseLeave={() => setHover(false)}
-            key={message._id}
             className={`relative chat hover:cursor-pointer ${
               message.senderId === authUser._id ? "chat-end" : "chat-start"
             }`}
-            ref={messageEndRef}
           >
             {/* Hovered icons */}
             {hover === message._id && (
@@ -220,6 +219,8 @@ const ChatContainer = () => {
             </div>
           </div>
         ))}
+        {/* ⬅️ Only one ref at end-of-list */}
+        <div ref={messageEndRef} />
       </div>
 
       <MessageInput />
