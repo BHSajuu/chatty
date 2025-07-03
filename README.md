@@ -25,6 +25,7 @@ Here are some features planned for future implementation:
     - done but need improvement in :
         - when a user send the joining link to oppsite user , then autmotically the joing invitation link send twice.
         - The Call room layout for mobile is not setup correctly.
+        -  In chatContainer ther should be one tap runing while a user inside video call room ,so that if user by change leave the pageb without ending the call , then user should able to join the with continue botton and if the user want to cencl the call the should clicl on end button inside chatContainer 
 - Integrate AI suggestions using Google API for smarter interactions.
     - Language translation & localization
     - Smart suggestions & auto‑completion
