@@ -12,6 +12,7 @@ import SettingsPage from "./pages/SettingsPage";
 import SignUpPage from "./pages/SignUpPage";
 import { useAuthStore } from "./store/useAuthStore";
 import { useThemeStore } from "./store/useThemeStore";
+import CallPage from "./pages/CallPage";
 
 function App() {
   const { authUser, checkAuth, isCheckingAuth, onlineUsers } = useAuthStore();
@@ -59,6 +60,10 @@ function App() {
         <Route
           path="/reset-password/:token"
           element={!authUser ? <ResetPasswordPage /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/call/:id"
+          element={authUser ? <CallPage /> : <Navigate to="/login" />}
         />
       </Routes>
 

@@ -2,25 +2,38 @@ import { MessageCircleX, Video, X } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
 import { useState } from "react";
-
+import { v4 as uuidv4 } from 'uuid';
+import toast from "react-hot-toast";
 
 const ChatHeader = () => {
-  const { selectedUser, setSelectedUser,  clearChat } = useChatStore();
+  const { selectedUser, setSelectedUser, clearChat, sendMessage } = useChatStore();
   const { authUser } = useAuthStore();
   const { onlineUsers } = useAuthStore();
   const [open, setOpen] = useState(false);
-  
-  
-  const handleClearChat = async() => {
+
+
+  const handleClearChat = async () => {
     try {
       await clearChat(selectedUser._id, authUser._id);
     } catch (error) {
       console.error("Error clearing chat:", error);
     }
-    finally{
+    finally {
       setOpen(false);
     }
   }
+
+  const handleVideoCall = async() => {
+    const callId = uuidv4();
+    const callUrl = `${window.location.origin}/call/${callId}`;
+     // Send video call link as a message
+      await sendMessage({
+        text: `📹 Video Call Invitation: ${selectedUser.fullName}, click to join: ${callUrl}`,
+        image: null,
+        audio: null,
+      });
+      toast.success("Video call created! Link sent to chat.");
+  };
 
   return (
     <div className=" p-2.5  border-b border-base-300 fixed w-full top-2 z-40 backdrop-blur-3xl md:w-auto md:relative md:top-0 md:z-0">
@@ -44,12 +57,14 @@ const ChatHeader = () => {
         </div>
 
         <div className="flex flex-row gap-8 lg:gap-18 items-center">
-           <button className="tooltip tooltip-left hover:cursor-pointer" data-tip="Video call" type="button">
-             <Video  />
-           </button>
-           <button className="tooltip tooltip-left hover:cursor-pointer" data-tip="Clear chat" type="button">
-           <MessageCircleX  onClick={()=>setOpen(true)} />
-           </button>
+
+          <button onClick={handleVideoCall} className="tooltip tooltip-left hover:cursor-pointer" data-tip="Video call" type="button">
+            <Video />
+          </button>
+
+          <button className="tooltip tooltip-left hover:cursor-pointer" data-tip="Clear chat" type="button">
+            <MessageCircleX onClick={() => setOpen(true)} />
+          </button>
           {open && (
             <div className="fixed inset-0 flex items-center justify-center  backdrop-blur-sm z-5">
               <div className="bg-base-200 rounded-2xl shadow-3xl p-6 space-y-4 max-w-sm text-center animate-fade-in">
