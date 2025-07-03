@@ -15,7 +15,7 @@ import "@stream-io/video-react-sdk/dist/css/styles.css";
 import toast from "react-hot-toast";
 import { axiosInstance } from "../lib/axios";
 import { useAuthStore } from "../store/useAuthStore";
-import { Loader } from "lucide-react";
+import { Loader, Phone, Video } from "lucide-react";
 
 const STREAM_API_KEY = import.meta.env.VITE_STREAM_API_KEY;
 
@@ -81,13 +81,21 @@ function CallPage() {
     initCall();
   }, [authUser, callId]);
 
-  if (isLoading || isConnecting) return (
-
-    <div className="flex items-center justify-center h-screen">
-      {console.log("loadinf only")}
-      <Loader className="size-10 animate-spin" />
-    </div>
-  );
+if (isLoading || isConnecting) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-br from-indigo-900 to-purple-900">
+        <div className="animate-pulse rounded-full p-6 bg-indigo-800 mb-4">
+          <div className="bg-indigo-700 rounded-full p-4">
+            <Video className="text-white w-12 h-12" />
+          </div>
+        </div>
+        <p className="text-white text-xl font-medium">Connecting to call...</p>
+        <div className="mt-6 h-1 w-64 bg-indigo-800 rounded-full overflow-hidden">
+          <div className="animate-pulse h-full w-1/2 bg-indigo-500"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen flex flex-col items-center justify-center">
@@ -99,8 +107,18 @@ function CallPage() {
             </StreamCall>
           </StreamVideo>
         ) : (
-          <div className="flex items-center justify-center h-full">
-            <p>Could not initialize call. Please refresh or try again later.</p>
+          <div className="flex flex-col items-center justify-center h-ful ">
+            <div className="bg-red-500/20 p-6 rounded-full mb-4">
+              <Phone className="w-12 h-12 text-red-400" />
+            </div>
+            <h2 className="text-2xl font-bold mb-2">Call Failed</h2>
+            <p className="text-gray-400 mb-6">Could not initialize the video call</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-full font-medium transition-colors"
+            >
+              Try Again
+            </button>
           </div>
         )}
       </div>
