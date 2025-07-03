@@ -149,7 +149,7 @@ const CallContent = () => {
           ? <PaginatedGridLayout  />
           : <SpeakerLayout  />}
       </div>
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+      <div className="bg-slate-950/50 rounded-3xl w-auto px-2 absolute bottom-4 left-1/2 transform -translate-x-1/2">
         <CallControls />
       </div>
     </StreamTheme>
