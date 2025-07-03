@@ -81,7 +81,7 @@ function CallPage() {
     initCall();
   }, [authUser, callId]);
 
-if (isLoading || isConnecting) {
+  if (isLoading || isConnecting) {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-br from-indigo-900 to-purple-900">
         <div className="animate-pulse rounded-full p-6 bg-indigo-800 mb-4">
@@ -98,31 +98,31 @@ if (isLoading || isConnecting) {
   }
 
   return (
-    <div className="h-screen flex flex-col items-center justify-center">
-      <div className="relative">
-        {client && call ? (
-          <StreamVideo client={client}>
-            <StreamCall call={call}>
-              <CallContent />
-            </StreamCall>
-          </StreamVideo>
-        ) : (
-          <div className="flex flex-col items-center justify-center h-ful ">
-            <div className="bg-red-500/20 p-6 rounded-full mb-4">
-              <Phone className="w-12 h-12 text-red-400" />
-            </div>
-            <h2 className="text-2xl font-bold mb-2">Call Failed</h2>
-            <p className="text-gray-400 mb-6">Could not initialize the video call</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-full font-medium transition-colors"
-            >
-              Try Again
-            </button>
+
+    <div className="flex h-screen justify-center items-center gap-5">
+      {client && call ? (
+        <StreamVideo client={client} className="flex-1">
+          <StreamCall call={call} className="flex-1">
+            <CallContent />
+          </StreamCall>
+        </StreamVideo>
+      ) : (
+        <div className="flex flex-col items-center justify-center h-ful ">
+          <div className="bg-red-500/20 p-6 rounded-full mb-4">
+            <Phone className="w-12 h-12 text-red-400" />
           </div>
-        )}
-      </div>
+          <h2 className="text-2xl font-bold mb-2">Call Failed</h2>
+          <p className="text-gray-400 mb-6">Could not initialize the video call</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-full font-medium transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      )}
     </div>
+
   );
 };
 
@@ -144,8 +144,14 @@ const CallContent = () => {
 
   return (
     <StreamTheme>
-      {isMobile ? <PaginatedGridLayout /> : <SpeakerLayout />}
-      <CallControls />
+      <div className="flex flex-1">
+        {isMobile
+          ? <PaginatedGridLayout  />
+          : <SpeakerLayout  />}
+      </div>
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+        <CallControls />
+      </div>
     </StreamTheme>
   );
 };
