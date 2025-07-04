@@ -4,13 +4,15 @@ import { useChatStore } from "../store/useChatStore";
 import { useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import toast from "react-hot-toast";
+import { useCallStore } from "../store/useCallStore";
 
 const ChatHeader = () => {
   const { selectedUser, setSelectedUser, clearChat, sendMessage } = useChatStore();
   const { authUser } = useAuthStore();
   const { onlineUsers } = useAuthStore();
   const [open, setOpen] = useState(false);
-
+  
+  const { join } = useCallStore();
 
   const handleClearChat = async () => {
     try {
@@ -32,6 +34,7 @@ const ChatHeader = () => {
         image: null,
         audio: null,
       });
+     join(callId);
       toast.success("Video call created! Link sent to chat.");
   };
 

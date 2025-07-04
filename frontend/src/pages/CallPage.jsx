@@ -15,7 +15,8 @@ import "@stream-io/video-react-sdk/dist/css/styles.css";
 import toast from "react-hot-toast";
 import { axiosInstance } from "../lib/axios";
 import { useAuthStore } from "../store/useAuthStore";
-import { Loader, Phone, Video } from "lucide-react";
+import { Phone, Video } from "lucide-react";
+import { useCallStore} from "../store/useCallStore";
 
 const STREAM_API_KEY = import.meta.env.VITE_STREAM_API_KEY;
 
@@ -28,6 +29,8 @@ function CallPage() {
   const [isConnecting, setIsConnecting] = useState(true);
 
   const { isLoading, authUser } = useAuthStore();
+
+   const { callId: storedId, join, end } = useCallStore();
 
 
   const tokenProvider = async () => {
@@ -65,8 +68,9 @@ function CallPage() {
         const callInstance = videoClient.call("default", callId);
 
         await callInstance.join({ create: true });
+        join(callId);
 
-        console.log("Joined call successfully");
+        toast.success("Joined call successfully");
 
         setClient(videoClient);
         setCall(callInstance);
@@ -79,7 +83,16 @@ function CallPage() {
     };
 
     initCall();
-  }, [authUser, callId]);
+  }, [authUser]);
+  
+   useEffect(() => {
+    async function init() {
+      const callInstance = client.call("default", callId);
+      await callInstance.join({ create: callId !== storedId });
+      join(callId);
+    }
+    init();
+  }, [callId]);
 
   if (isLoading || isConnecting) {
     return (
@@ -97,7 +110,7 @@ function CallPage() {
     );
   }
 
-  return (
+   return (
 
     <div className="flex h-screen justify-center items-center gap-5">
       {client && call ? (
@@ -127,8 +140,9 @@ function CallPage() {
 };
 
 const CallContent = () => {
-  const { useCallCallingState } = useCallStateHooks();
+  const { useCallCallingState, useParticipantCount } = useCallStateHooks();
   const callingState = useCallCallingState();
+  const participantCount = useParticipantCount();
 
   const navigate = useNavigate();
 
@@ -146,9 +160,10 @@ const CallContent = () => {
     <StreamTheme>
       <div className="flex flex-1">
         {isMobile
-          ? <PaginatedGridLayout  />
-          : <SpeakerLayout  />}
+          ? <PaginatedGridLayout groupSize={participantCount==2 ? 1 : 6}  className="flex flex-1" />
+          : <SpeakerLayout participantsBarPosition="right" className="flex flex-1" />}
       </div>
+      
       <div className="bg-slate-950/50 rounded-3xl w-auto px-2 absolute bottom-4 left-1/2 transform -translate-x-1/2">
         <CallControls />
       </div>
@@ -156,4 +171,4 @@ const CallContent = () => {
   );
 };
 
-export default CallPage
+export default CallPage;
