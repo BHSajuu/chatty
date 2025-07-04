@@ -10,13 +10,14 @@ import {
   CallingState,
   useCallStateHooks,
   PaginatedGridLayout,
+  ParticipantView,
 } from "@stream-io/video-react-sdk";
 import "@stream-io/video-react-sdk/dist/css/styles.css";
 import toast from "react-hot-toast";
 import { axiosInstance } from "../lib/axios";
 import { useAuthStore } from "../store/useAuthStore";
 import { Phone, Video } from "lucide-react";
-import { useCallStore} from "../store/useCallStore";
+import { useCallStore } from "../store/useCallStore";
 
 const STREAM_API_KEY = import.meta.env.VITE_STREAM_API_KEY;
 
@@ -30,7 +31,7 @@ function CallPage() {
 
   const { isLoading, authUser } = useAuthStore();
 
-   const { callId: storedId, join, end } = useCallStore();
+  const { callId: storedId, join, end } = useCallStore();
 
 
   const tokenProvider = async () => {
@@ -84,8 +85,8 @@ function CallPage() {
 
     initCall();
   }, [authUser]);
-  
-   useEffect(() => {
+
+  useEffect(() => {
     async function init() {
       const callInstance = client.call("default", callId);
       await callInstance.join({ create: callId !== storedId });
@@ -110,7 +111,7 @@ function CallPage() {
     );
   }
 
-   return (
+  return (
 
     <div className="flex h-screen justify-center items-center gap-5">
       {client && call ? (
@@ -140,9 +141,11 @@ function CallPage() {
 };
 
 const CallContent = () => {
-  const { useCallCallingState, useParticipantCount } = useCallStateHooks();
+  const { useCallCallingState, useParticipantCount, useLocalParticipant, useRemoteParticipants, } = useCallStateHooks();
   const callingState = useCallCallingState();
   const participantCount = useParticipantCount();
+  const localParticipant = useLocalParticipant();
+  const remoteParticipants = useRemoteParticipants();
 
   const navigate = useNavigate();
 
@@ -157,18 +160,83 @@ const CallContent = () => {
   }, []);
 
   return (
-    <StreamTheme>
-      <div className="flex flex-1">
-        {isMobile
-          ? <PaginatedGridLayout groupSize={participantCount==2 ? 1 : 6}  className="flex flex-1" />
-          : <SpeakerLayout participantsBarPosition="right" className="flex flex-1" />}
-      </div>
-      
-      <div className="bg-slate-950/50 rounded-3xl w-auto px-2 absolute bottom-4 left-1/2 transform -translate-x-1/2">
-        <CallControls />
-      </div>
-    </StreamTheme>
+    participantCount <= 2 ? (
+      <StreamTheme>
+        <MyParticipantList participants={remoteParticipants} />
+        <MyFloatingLocalParticipant participant={localParticipant} />
+        <div className="bg-slate-950/50 z-50 rounded-3xl w-auto px-2 absolute bottom-4 left-1/2 transform -translate-x-1/2">
+          <CallControls />
+        </div>
+      </StreamTheme>
+    ) : (
+      <StreamTheme>
+        <div className="flex flex-1">
+          {isMobile
+            ? <PaginatedGridLayout className="flex flex-1" />
+            : <SpeakerLayout participantsBarPosition="right" className="flex flex-1" />}
+        </div>
+
+        <div className="bg-slate-950/50 rounded-3xl w-auto px-2 absolute bottom-4 left-1/2 transform -translate-x-1/2">
+          <CallControls />
+        </div>
+      </StreamTheme>
+    )
   );
 };
+
+export const MyParticipantList = ({ participants }) => {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+
+   // Mobile: full-screen
+  if (isMobile) {
+    return (
+      <div className="absolute m-1 inset-0 z-10">
+        <ParticipantView participant={participants[0]} className="w-screen h-screen object-scale-down" />
+      </div>
+    );
+  }
+
+  // Desktop: centered window
+  return (
+    <div className="absolute inset-0 z-10 flex items-center justify-center">
+      <div className="w-[90vw] h-[85vh] rounded-2xl overflow-hidden shadow-lg">
+        <ParticipantView participant={participants[0]} className="w-full h-full" />
+      </div>
+    </div>
+  );
+};
+
+
+export const MyFloatingLocalParticipant = ({ participant }) => {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+
+  if (!participant) return <p>Error: No local participant</p>;
+
+  return (
+    <div
+      className={`absolute rounded-lg overflow-hidden shadow-xl  bg-opacity-60 ${
+        isMobile
+          ? "bottom-12 right-4 w-44 h-44 rounded-4xl"
+          : "top-16 left-4 w-60 h-40"
+      }`}
+      style={{ zIndex: 20 }}
+    >
+      <ParticipantView participant={participant} />
+    </div>
+  );
+};
+
 
 export default CallPage;
