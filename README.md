@@ -26,7 +26,7 @@ Here are some features planned for future implementation:
 - Integrate AI suggestions using Google API for smarter interactions.
     - Language translation & localization
     - Smart suggestions & auto‑completion
-    - Taling with Vapi
+    - Talking with Vapi
 
 - Add a payment gateway to enable premium AI suggestion features.
 
