@@ -24,6 +24,23 @@ const userSchema = new mongoose.Schema(
     resetPasswordExpiresAt: Date,
     verificationToken: String,
     verificationTokenExpiresAt: Date,
+    // Translation-related fields
+    translationEnabled: {
+      type: Boolean,
+      default: false,
+    },
+    preferredLanguage: {
+      type: String,
+      default: "English",
+    },
+    dailyTranslationCount: {
+      type: Number,
+      default: 0,
+    },
+    lastTranslationDate: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true } // for created at and updated at
 );

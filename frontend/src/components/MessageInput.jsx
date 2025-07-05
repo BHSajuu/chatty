@@ -2,6 +2,7 @@ import { Image, Send, X, Mic, StopCircle } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useChatStore } from "../store/useChatStore";
+import { useTranslationStore } from "../store/useTranslationStore"; // Added translation store
 import { useReactMediaRecorder } from "react-media-recorder";
 import CustomAudioPlayer from "./CustomAudioPlayer";
 
@@ -13,6 +14,13 @@ const MessageInput = () => {
   const intervalRef = useRef(null);
   const fileInputRef = useRef(null);
   const { sendMessage } = useChatStore();
+  
+  // Translation functionality
+  const { 
+    translationEnabled, 
+    preferredLanguage, 
+    translateMessage 
+  } = useTranslationStore();
 
   const {
     status,
@@ -76,8 +84,18 @@ const MessageInput = () => {
         });
       }
 
+      let messageText = text.trim();
+      
+      // Auto-translate outgoing message if translation is enabled
+      if (translationEnabled && messageText && preferredLanguage !== "English") {
+        const translatedText = await translateMessage(messageText, preferredLanguage);
+        if (translatedText) {
+          messageText = translatedText;
+        }
+      }
+
       await sendMessage({
-        text: text.trim(),
+        text: messageText,
         image: imagePreview,
         audio: audioData,
       });
@@ -105,9 +123,7 @@ const MessageInput = () => {
   return (
     <div className=" py-1  px-3 md:p-4 w-full md:relative fixed bottom-0">
 
-
       <div className="flex flex-row items-center  gap-28">
-
 
         {/* Audio controls or preview */}
         {audioPreview ? (
@@ -182,14 +198,13 @@ const MessageInput = () => {
 
       </div>
 
-
       {/* Message input form */}
       <form onSubmit={handleSendMessage} className="flex items-center gap-2">
         <div className="flex-1 flex gap-2">
           <input
             type="text"
             className="w-full input input-bordered rounded-lg input-sm sm:input-md"
-            placeholder="Type a message..."
+            placeholder={translationEnabled ? `Type in any language (will be translated to ${preferredLanguage})...` : "Type a message..."}
             value={text}
             onChange={(e) => setText(e.target.value)}
           />

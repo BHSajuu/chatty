@@ -1,8 +1,9 @@
-import { Send, X } from "lucide-react";
+import { Send, X, Languages, Globe } from "lucide-react";
 import { THEMES } from "../constants";
 import { useThemeStore } from "../store/useThemeStore";
+import { useTranslationStore } from "../store/useTranslationStore"; // Added translation store
 import { useNavigate } from "react-router-dom";
-
+import { useEffect } from "react";
 
 const PREVIEW_MESSAGES = [
   { id: 1, content: "Hey! How's it going?", isSent: false },
@@ -16,6 +17,23 @@ const PREVIEW_MESSAGES = [
 const SettingsPage = () => {
   const { theme, setTheme } = useThemeStore();
   const navigate = useNavigate();
+  
+  // Translation store
+  const {
+    translationEnabled,
+    preferredLanguage,
+    dailyTranslationCount,
+    remainingTranslations,
+    availableLanguages,
+    getTranslationStats,
+    toggleTranslation,
+    setPreferredLanguage
+  } = useTranslationStore();
+
+  // Fetch translation stats when component mounts
+  useEffect(() => {
+    getTranslationStats();
+  }, [getTranslationStats]);
 
   return (
     <div className="min-h-screen container mx-auto px-4 pt-20 max-w-5xl hover:shadow-2xl hover:shadow-blue-300/30 transition-all duration-300">
@@ -35,6 +53,83 @@ const SettingsPage = () => {
           </button>
         </div>
 
+        {/* Translation Settings Section */}
+        <div className="bg-base-100 rounded-xl p-6 shadow-lg">
+          <div className="flex flex-col gap-1 mb-6">
+            <div className="flex items-center gap-2">
+              <Languages className="w-5 h-5 text-primary" />
+              <h2 className="text-lg font-semibold">Translation Settings</h2>
+            </div>
+            <p className="text-sm text-base-content/70">
+              Auto-translate messages between different languages
+            </p>
+          </div>
+
+          <div className="space-y-6">
+            {/* Translation Toggle */}
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col">
+                <span className="font-medium">Enable Auto-Translation</span>
+                <span className="text-sm text-base-content/70">
+                  Automatically translate incoming and outgoing messages
+                </span>
+              </div>
+              <input
+                type="checkbox"
+                className="toggle toggle-primary"
+                checked={translationEnabled}
+                onChange={toggleTranslation}
+              />
+            </div>
+
+            {/* Language Selection */}
+            <div className="flex flex-col gap-3">
+              <label className="font-medium flex items-center gap-2">
+                <Globe className="w-4 h-4" />
+                Preferred Language
+              </label>
+              <select
+                className="select select-bordered w-full max-w-xs"
+                value={preferredLanguage}
+                onChange={(e) => setPreferredLanguage(e.target.value)}
+                disabled={!translationEnabled}
+              >
+                {availableLanguages.map((language) => (
+                  <option key={language} value={language}>
+                    {language}
+                  </option>
+                ))}
+              </select>
+              <p className="text-sm text-base-content/70">
+                Messages will be translated to this language
+              </p>
+            </div>
+
+            {/* Usage Stats */}
+            <div className="bg-base-200 rounded-lg p-4">
+              <h3 className="font-medium mb-3">Daily Usage</h3>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-sm">Translations used today:</span>
+                  <span className="text-sm font-medium">{dailyTranslationCount}/15</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm">Remaining translations:</span>
+                  <span className="text-sm font-medium text-primary">{remainingTranslations}</span>
+                </div>
+                <div className="w-full bg-base-300 rounded-full h-2">
+                  <div
+                    className="bg-primary h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${(dailyTranslationCount / 15) * 100}%` }}
+                  ></div>
+                </div>
+                <p className="text-xs text-base-content/60 mt-2">
+                  Translation limit resets daily at midnight
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Theme Settings Section */}
         <div className="bg-base-100 rounded-xl p-6 shadow-lg">
@@ -92,6 +187,11 @@ const SettingsPage = () => {
                         <h3 className="font-medium text-sm">John Doe</h3>
                         <p className="text-xs text-base-content/70">Online</p>
                       </div>
+                      {translationEnabled && (
+                        <div className="ml-auto">
+                          <Languages className="w-4 h-4 text-primary" />
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -115,6 +215,12 @@ const SettingsPage = () => {
                           `}
                         >
                           <p className="text-sm">{message.content}</p>
+                          {translationEnabled && !message.isSent && (
+                            <div className="text-xs opacity-60 mt-1 flex items-center gap-1">
+                              <Languages className="w-3 h-3" />
+                              <span>Translated to {preferredLanguage}</span>
+                            </div>
+                          )}
                           <p
                             className={`
                               text-[10px] mt-1.5
@@ -138,7 +244,7 @@ const SettingsPage = () => {
                       <input
                         type="text"
                         className="input input-bordered flex-1 text-sm h-10"
-                        placeholder="Type a message..."
+                        placeholder={translationEnabled ? `Type in any language (will be translated to ${preferredLanguage})...` : "Type a message..."}
                         value="This is a preview"
                         readOnly
                       />

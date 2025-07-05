@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { formatMessageTime } from "../lib/utils";
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
+import { useTranslationStore } from "../store/useTranslationStore"; // Added translation store
 import ChatHeader from "./ChatHeader";
 import MessageInput from "./MessageInput";
 import MessageSkeleton from "./skeletons/MessageSkeleton";
-import { Check, Pencil, Trash2, X } from "lucide-react";
+import { Check, Pencil, Trash2, X, Languages } from "lucide-react"; // Added Languages icon
 import CustomAudioPlayer from "./CustomAudioPlayer";
 import Linkify from "react-linkify";
 import ConfirmationModal from "./ConfirmationModal";
@@ -22,14 +23,26 @@ const ChatContainer = () => {
     editMessageText,
   } = useChatStore();
   const { authUser } = useAuthStore();
+  
+  // Translation store
+  const { 
+    translationEnabled, 
+    preferredLanguage, 
+    translateMessage, 
+    isTranslating 
+  } = useTranslationStore();
+  
   const messageEndRef = useRef(null);
 
   const [hover, setHover] = useState(false);
   const [editingMessageId, setEditingMessageId] = useState(null);
   const [editedText, setEditedText] = useState("");
-
   const [modalOpen, setModalOpen] = useState(false);
   const [currentLink, setCurrentLink] = useState("");
+  
+  // Translation state for each message
+  const [translatedMessages, setTranslatedMessages] = useState({});
+  const [translatingMessageId, setTranslatingMessageId] = useState(null);
 
   useEffect(() => {
     getMessages(selectedUser._id);
@@ -48,6 +61,18 @@ const ChatContainer = () => {
     }
   }, [messages]);
 
+  // Auto-translate incoming messages if translation is enabled
+  useEffect(() => {
+    if (translationEnabled && messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      
+      // Only translate messages from other users (not from current user)
+      if (lastMessage.senderId !== authUser._id && lastMessage.text && !translatedMessages[lastMessage._id]) {
+        handleTranslateMessage(lastMessage._id, lastMessage.text);
+      }
+    }
+  }, [messages, translationEnabled, preferredLanguage]);
+
   const handleDeleteMessage = async (messageId) => {
     try {
       await deleteMessage(messageId);
@@ -64,6 +89,24 @@ const ChatContainer = () => {
     } catch (error) {
       console.error("Failed to edit message:", error);
     }
+  };
+
+  // Handle manual translation of a specific message
+  const handleTranslateMessage = async (messageId, text) => {
+    if (!text || translatedMessages[messageId]) return;
+    
+    setTranslatingMessageId(messageId);
+    
+    const translatedText = await translateMessage(text, preferredLanguage);
+    
+    if (translatedText) {
+      setTranslatedMessages(prev => ({
+        ...prev,
+        [messageId]: translatedText
+      }));
+    }
+    
+    setTranslatingMessageId(null);
   };
 
   const openJoinModal = (link) => {
@@ -108,6 +151,17 @@ const ChatContainer = () => {
                 } flex items-center`}
               >
                 <div className="flex gap-2">
+                  {/* Translation button - only show for messages from other users and if translation is enabled */}
+                  {message.senderId !== authUser._id && translationEnabled && message.text && (
+                    <Languages
+                      className={`w-5 h-5 cursor-pointer hover:scale-110 transition-transform ${
+                        translatedMessages[message._id] ? 'text-green-500' : 'text-blue-500'
+                      } ${translatingMessageId === message._id ? 'animate-spin' : ''}`}
+                      onClick={() => handleTranslateMessage(message._id, message.text)}
+                      title={translatedMessages[message._id] ? 'Translated' : 'Translate message'}
+                    />
+                  )}
+                  
                   {message.senderId === authUser._id && (
                     <Pencil
                       className="w-5 h-5 text-blue-500 cursor-pointer hover:scale-110 transition-transform"
@@ -182,35 +236,48 @@ const ChatContainer = () => {
                   </div>
                 </div>
               ) : (
-                <Linkify
-                  componentDecorator={(href, text, key) => {
-                    const isCallLink = href.includes("/call/");
-                    return isCallLink ? (
-                      <button
-                        key={key}
-                        className="text-blue-500 hover:cursor-pointer btn-link p-0 m-0 bg-transparent"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          openJoinModal(href);
-                        }}
-                      >
-                        click to join
-                      </button>
-                    ) : (
-                      <a
-                        key={key}
-                        href={href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-500 hover:cursor-pointer"
-                      >
-                        {text}
-                      </a>
-                    );
-                  }}
-                >
-                  <p>{message.text}</p>
-                </Linkify>
+                <div>
+                  {/* Show translated text if available, otherwise show original */}
+                  <Linkify
+                    componentDecorator={(href, text, key) => {
+                      const isCallLink = href.includes("/call/");
+                      return isCallLink ? (
+                        <button
+                          key={key}
+                          className="text-blue-500 hover:cursor-pointer btn-link p-0 m-0 bg-transparent"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            openJoinModal(href);
+                          }}
+                        >
+                          click to join
+                        </button>
+                      ) : (
+                        <a
+                          key={key}
+                          href={href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 hover:cursor-pointer"
+                        >
+                          {text}
+                        </a>
+                      );
+                    }}
+                  >
+                    <p>
+                      {translatedMessages[message._id] || message.text}
+                    </p>
+                  </Linkify>
+                  
+                  {/* Show translation indicator */}
+                  {translatedMessages[message._id] && (
+                    <div className="text-xs opacity-60 mt-1 flex items-center gap-1">
+                      <Languages className="w-3 h-3" />
+                      <span>Translated to {preferredLanguage}</span>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           </div>

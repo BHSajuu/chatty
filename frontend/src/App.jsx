@@ -12,17 +12,24 @@ import SettingsPage from "./pages/SettingsPage";
 import SignUpPage from "./pages/SignUpPage";
 import { useAuthStore } from "./store/useAuthStore";
 import { useThemeStore } from "./store/useThemeStore";
+import { useTranslationStore } from "./store/useTranslationStore"; // Added translation store
 import CallPage from "./pages/CallPage";
 
 function App() {
   const { authUser, checkAuth, isCheckingAuth, onlineUsers } = useAuthStore();
   const { theme } = useThemeStore();
+  const { getTranslationStats } = useTranslationStore(); // Added translation stats
 
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
 
-
+  // Fetch translation stats when user is authenticated
+  useEffect(() => {
+    if (authUser) {
+      getTranslationStats();
+    }
+  }, [authUser, getTranslationStats]);
 
   if (isCheckingAuth && !authUser)
     return (

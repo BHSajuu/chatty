@@ -8,6 +8,7 @@ import { app, server } from "./lib/socket.js";
 import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
 import videoRoute from "./routes/video.route.js"
+import translationRoute from "./routes/translation.route.js"; 
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/video", videoRoute);
+app.use("/api/translation", translationRoute); 
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
