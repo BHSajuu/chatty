@@ -21,6 +21,17 @@ const messageSchema = new mongoose.Schema(
     audio: {
       type: String,
     },
+    // Translation storage - stores multiple language versions of the same message
+    translations: {
+      type: Map,
+      of: String,
+      default: new Map()
+    },
+    // Original language of the message (detected or set by sender)
+    originalLanguage: {
+      type: String,
+      default: "English"
+    }
   },
   { timestamps: true }
 );
