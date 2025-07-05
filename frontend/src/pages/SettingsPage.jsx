@@ -2,7 +2,7 @@ import { Send, X } from "lucide-react";
 import { THEMES } from "../constants";
 import { useThemeStore } from "../store/useThemeStore";
 import { useNavigate } from "react-router-dom";
-import AILanguageSettings from "../components/AILanguageSettings";
+
 
 const PREVIEW_MESSAGES = [
   { id: 1, content: "Hey! How's it going?", isSent: false },
@@ -35,10 +35,6 @@ const SettingsPage = () => {
           </button>
         </div>
 
-        {/* AI Language Settings Section */}
-        <div className="bg-base-100 rounded-xl p-6 shadow-lg">
-          <AILanguageSettings />
-        </div>
 
         {/* Theme Settings Section */}
         <div className="bg-base-100 rounded-xl p-6 shadow-lg">

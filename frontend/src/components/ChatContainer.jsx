@@ -90,16 +90,15 @@ const ChatContainer = () => {
     <div className="flex-1 flex flex-col overflow-auto md:my-0">
       <ChatHeader />
       <div className="flex-1 overflow-y-scroll pt-8 pb-20 md:mb-0 px-4 md:p-4 space-y-4 md:relative">
-        {messages.map((message) => (
+        {messages.map((message, idx) => (
           <div
-            key={message._id}
+            key={`${message._id}-${idx}`}
             onMouseEnter={() => setHover(message._id)}
             onMouseLeave={() => setHover(false)}
             className={`relative chat hover:cursor-pointer ${
               message.senderId === authUser._id ? "chat-end" : "chat-start"
             }`}
           >
-            {/* Hovered icons */}
             {hover === message._id && (
               <div
                 className={`absolute ${
@@ -126,7 +125,6 @@ const ChatContainer = () => {
               </div>
             )}
 
-            {/* Avatar + Timestamp */}
             <div className="chat-image avatar">
               <div className="size-10 rounded-full border">
                 <img
@@ -145,7 +143,6 @@ const ChatContainer = () => {
               </time>
             </div>
 
-            {/* Content Bubble */}
             <div className="chat-bubble w-[220px] lg:w-auto flex flex-col">
               {message.image && (
                 <img
@@ -160,7 +157,6 @@ const ChatContainer = () => {
                 </div>
               )}
 
-              {/* Edit Input or Parsed Text */}
               {editingMessageId === message._id ? (
                 <div className="flex flex-col items-center gap-2">
                   <input
@@ -219,7 +215,6 @@ const ChatContainer = () => {
             </div>
           </div>
         ))}
-        {/* ⬅️ Only one ref at end-of-list */}
         <div ref={messageEndRef} />
       </div>
 
