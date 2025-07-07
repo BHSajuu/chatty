@@ -25,8 +25,7 @@ Here are some features planned for future implementation:
 
 - Integrate AI suggestions using Google API for smarter interactions.
     - Language translation & localization ✅
-       - Automatically translate messages between users speaking different languages. Send received text to Gemini with a prompt like “Translate to English/French/etc.” And this English/French/etc depends on the lamguage which is selected by user in setting . Let me explain the suitition more , suppose person1(who know bangali) chatting with person2(who know Hindi) , then in person1 chatContinar , all the messages are shown in Bangali including the message when sent by person2 in hindi but Gimini API convert that Hindi message and show it as bangali ,as our person1 only know bangali ,also if the person1 writing code using English keyboard then aslo after sending the message ,the message should appear in Bangali . Do the similar for person2 aslo. 
-
+    
     - Smart suggestions & auto‑completion
        - Reply suggestions: Show short response options (like “👍 Got it”, “Sounds good”) based on the ongoing conversation.
        - Typing assist: Suggest next words or sentences as the user types to accelerate messaging.
