@@ -28,7 +28,6 @@ const ChatContainer = () => {
   // Translation store
   const {
     translationEnabled,
-    preferredLanguage,
   } = useTranslationStore();
 
   const messageEndRef = useRef(null);
@@ -156,16 +155,6 @@ const ChatContainer = () => {
     }
   };
 
-  // Function to check if translation indicator should be shown
-  const shouldShowTranslationIndicator = (message) => {
-    const isCurrentUserSender = message.senderId === authUser._id;
-
-    if (isCurrentUserSender) {
-      return translationEnabled && message.senderText && message.senderText !== message.commonText;
-    } else {
-      return translationEnabled && message.receiverText && message.receiverText !== message.commonText;
-    }
-  };
 
   if (isMessagesLoading) {
     return (

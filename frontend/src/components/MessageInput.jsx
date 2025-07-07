@@ -1,4 +1,4 @@
-import { Image, Send, X, Mic, StopCircle } from "lucide-react";
+import { Image, Send, X, Mic, StopCircle, Languages } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useChatStore } from "../store/useChatStore";
@@ -10,14 +10,16 @@ const MessageInput = () => {
   const [text, setText] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
   const [audioPreview, setAudioPreview] = useState(null);
+  const [sending, setSending] = useState(false);
+
   const [seconds, setSeconds] = useState(0);
   const intervalRef = useRef(null);
   const fileInputRef = useRef(null);
   const { sendMessage } = useChatStore();
-  
-  // Translation functionality - removed translateMessage as it's now handled in backend
-  const { 
-    translationEnabled, 
+
+
+  const {
+    translationEnabled,
     preferredLanguage
   } = useTranslationStore();
 
@@ -71,7 +73,7 @@ const MessageInput = () => {
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!text.trim() && !imagePreview && !audioPreview) return;
-
+    setSending(true);
     try {
       let audioData = null;
       if (audioPreview) {
@@ -98,6 +100,9 @@ const MessageInput = () => {
       if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (error) {
       console.error("Failed to send message:", error);
+    }
+    finally {
+      setSending(false);
     }
   };
 
@@ -165,7 +170,7 @@ const MessageInput = () => {
             </button>
           </div>
         )}
-         
+
         {/* Image preview */}
         {imagePreview && (
           <div className="mb-3 flex items-center gap-2">
@@ -183,6 +188,13 @@ const MessageInput = () => {
                 <X className="size-3" />
               </button>
             </div>
+          </div>
+        )}
+
+        {sending && translationEnabled && (
+          <div className="text-md opacity-60 mt-1 flex items-center gap-1">
+            <Languages className="w-3 h-3 animate-spin" />
+            <span>Translating...</span>
           </div>
         )}
 
