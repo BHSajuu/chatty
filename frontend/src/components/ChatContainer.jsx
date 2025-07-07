@@ -327,18 +327,8 @@ const ChatContainer = () => {
                     </p>
                   </Linkify>
                   
-                  {/* Show translation indicator */}
-                  {shouldShowTranslationIndicator(message) && (
-                    <div className="text-xs opacity-60 mt-1 flex items-center gap-1">
-                      <Languages className="w-3 h-3" />
-                      <span>
-                        {message.senderId === authUser._id 
-                          ? `Translated to ${preferredLanguage}`
-                          : `Translated to ${preferredLanguage}`
-                        }
-                      </span>
-                    </div>
-                  )}
+
+               
                   
                   {/* Show translation loading indicator */}
                   {translatingMessages.has(message._id) && (
