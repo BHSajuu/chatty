@@ -25,10 +25,6 @@ Here are some features planned for future implementation:
 
 - Integrate AI suggestions using Google API for smarter interactions.
     - Language translation & localization ✅
-    
-    - Smart suggestions & auto‑completion
-       - Reply suggestions: Show short response options (like “👍 Got it”, “Sounds good”) based on the ongoing conversation.
-       - Typing assist: Suggest next words or sentences as the user types to accelerate messaging.
 
     - Talking with Vapi
        - Develop an virtual assistant who can read the upcoming message or last comed message and tell user about the message and if user say "reply" and then told the reply answer then send this reply to that person .  
