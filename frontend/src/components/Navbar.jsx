@@ -3,11 +3,13 @@ import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 import TranslationStatus from "./TranslationStatus";
 import { useTranslationStore } from "../store/useTranslationStore";
+import { useCallStore } from "../store/useCallStore";
 
 const Navbar = () => {
   const { logout, authUser } = useAuthStore();
 
   const { translationEnabled, preferredLanguage } = useTranslationStore();
+  const {isActive} = useCallStore();
 
   return (
     <header
@@ -27,7 +29,7 @@ const Navbar = () => {
           </div>
 
           <div className="hidden lg:block relative top-8 left-30 hover:cursor-pointer">
-            {translationEnabled && <TranslationStatus translationEnabled={translationEnabled} preferredLanguage={preferredLanguage} />}
+            {translationEnabled && !isActive && <TranslationStatus translationEnabled={translationEnabled} preferredLanguage={preferredLanguage} />}
           </div>
           <div className="lg:hidden">
             <div className="flex items-center space-x-1 mt-1">
