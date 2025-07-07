@@ -6,10 +6,12 @@ import { v4 as uuidv4 } from 'uuid';
 import toast from "react-hot-toast";
 import { useCallStore } from "../store/useCallStore";
 
+
 const ChatHeader = () => {
   const { selectedUser, setSelectedUser, clearChat, sendMessage } = useChatStore();
   const { authUser } = useAuthStore();
   const { onlineUsers } = useAuthStore();
+
   const [open, setOpen] = useState(false);
   
   const { join } = useCallStore();
@@ -58,7 +60,7 @@ const ChatHeader = () => {
             </p>
           </div>
         </div>
-
+      
         <div className="flex flex-row gap-8 lg:gap-18 items-center">
 
           <button onClick={handleVideoCall} className="tooltip tooltip-left hover:cursor-pointer" data-tip="Video call" type="button">

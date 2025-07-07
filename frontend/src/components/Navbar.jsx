@@ -1,13 +1,17 @@
-import { LogOut, MessageSquare, Settings, User } from "lucide-react";
+import { Globe, LogOut, MessageSquare, Settings, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
+import TranslationStatus from "./TranslationStatus";
+import { useTranslationStore } from "../store/useTranslationStore";
 
 const Navbar = () => {
   const { logout, authUser } = useAuthStore();
 
+  const { translationEnabled, preferredLanguage } = useTranslationStore();
+
   return (
     <header
-      className="bg-base-100/80 border-b border-base-300 fixed w-full top-0 z-40 
+      className="bg-base-100/80 border-b border-base-300 fixed w-full top-0 z-40 lg:z-50  
     backdrop-blur-lg">
       <div className="container mx-auto px-4 h-16">
         <div className="flex items-center justify-between h-full">
@@ -20,6 +24,18 @@ const Navbar = () => {
               </div>
               <h1 className="text-lg font-bold">Chatty</h1>
             </Link>
+          </div>
+
+          <div className="hidden lg:block relative top-8 left-30 hover:cursor-pointer">
+            {translationEnabled && <TranslationStatus translationEnabled={translationEnabled} preferredLanguage={preferredLanguage} />}
+          </div>
+          <div className="lg:hidden">
+            <div className="flex items-center space-x-1 mt-1">
+              <Globe className="w-3 h-3 text-emerald-300" />
+              <span className="text-emerald-200 text-xs font-medium">
+                {preferredLanguage}
+              </span>
+            </div>
           </div>
 
           <div className="flex items-center gap-5 mr-4">

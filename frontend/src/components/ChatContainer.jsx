@@ -24,13 +24,13 @@ const ChatContainer = () => {
     updateReceiverText, // New function to update receiver text
   } = useChatStore();
   const { authUser } = useAuthStore();
-  
+
   // Translation store
-  const { 
-    translationEnabled, 
+  const {
+    translationEnabled,
     preferredLanguage,
   } = useTranslationStore();
-  
+
   const messageEndRef = useRef(null);
 
   const [hover, setHover] = useState(false);
@@ -38,7 +38,7 @@ const ChatContainer = () => {
   const [editedText, setEditedText] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [currentLink, setCurrentLink] = useState("");
-  
+
   // Track which messages are being translated
   const [translatingMessages, setTranslatingMessages] = useState(new Set());
 
@@ -63,19 +63,19 @@ const ChatContainer = () => {
   useEffect(() => {
     if (translationEnabled && messages.length > 0) {
       const lastMessage = messages[messages.length - 1];
-      
+
       // Only translate messages from other users (not from current user) and only if it's a new message
-      if (lastMessage.senderId !== authUser._id && 
-          lastMessage.commonText && 
-          !lastMessage.receiverText &&
-          !translatingMessages.has(lastMessage._id)) {
-        
+      if (lastMessage.senderId !== authUser._id &&
+        lastMessage.commonText &&
+        !lastMessage.receiverText &&
+        !translatingMessages.has(lastMessage._id)) {
+
         // Check if this is a new message (created within last 5 seconds)
         const messageTime = new Date(lastMessage.createdAt);
         const now = new Date();
         const timeDiff = (now - messageTime) / 1000; // difference in seconds
-        
-        if (timeDiff <= 5) { // Consider it a new message if created within 5 seconds
+
+        if (timeDiff <= 5) { // Consider it a new message if created within 5 seconds means if the user off auto-translate mood but when the sender sent the message after that if the user on his auto-translate mood then he will see the translated message mood wihtin 5 sec then the cominng message will translated.
           handleTranslateForReceiver(lastMessage._id);
         }
       }
@@ -103,9 +103,9 @@ const ChatContainer = () => {
   // Handle translation for receiver (update receiverText in database)
   const handleTranslateForReceiver = async (messageId) => {
     if (translatingMessages.has(messageId)) return;
-    
+
     setTranslatingMessages(prev => new Set([...prev, messageId]));
-    
+
     try {
       await updateReceiverText(messageId, authUser._id);
       // Refresh messages to get updated receiverText
@@ -134,7 +134,7 @@ const ChatContainer = () => {
   // Function to determine which text to display for a message
   const getDisplayText = (message) => {
     const isCurrentUserSender = message.senderId === authUser._id;
-    
+
     if (isCurrentUserSender) {
       // Current user is the sender
       if (translationEnabled && message.senderText) {
@@ -146,11 +146,11 @@ const ChatContainer = () => {
       if (!translationEnabled) {
         return message.commonText; // Display original text if translation is off
       }
-      
+
       if (message.receiverText) {
         return message.receiverText; // Display translated text in receiver's preferred language
       }
-      
+
       // If translation is on but receiverText doesn't exist, show original text
       return message.commonText;
     }
@@ -159,7 +159,7 @@ const ChatContainer = () => {
   // Function to check if translation indicator should be shown
   const shouldShowTranslationIndicator = (message) => {
     const isCurrentUserSender = message.senderId === authUser._id;
-    
+
     if (isCurrentUserSender) {
       return translationEnabled && message.senderText && message.senderText !== message.commonText;
     } else {
@@ -176,8 +176,8 @@ const ChatContainer = () => {
       </div>
     );
   }
- 
-    // —— Dedupe here ——
+
+  // —— Dedupe here ——
   const uniqueMessages = messages.filter(
     (m, i, a) => a.findIndex(x => x._id === m._id) === i
   );
@@ -192,33 +192,30 @@ const ChatContainer = () => {
             key={`${message._id}-${idx}`}
             onMouseEnter={() => setHover(message._id)}
             onMouseLeave={() => setHover(false)}
-            className={`relative chat hover:cursor-pointer ${
-              message.senderId === authUser._id ? "chat-end" : "chat-start"
-            }`}
+            className={`relative chat hover:cursor-pointer ${message.senderId === authUser._id ? "chat-end" : "chat-start"
+              }`}
           >
             {hover === message._id && (
               <div
-                className={`absolute ${
-                  message.senderId === authUser._id
-                    ? "right-0 top-1"
-                    : "left-0"
-                } flex items-center`}
+                className={`absolute ${message.senderId === authUser._id
+                  ? "right-0 top-1"
+                  : "left-0"
+                  } flex items-center`}
               >
                 <div className="flex gap-2">
                   {/* Translation button - only show for old messages from other users that don't have receiverText */}
-                  {message.senderId !== authUser._id && 
-                   message.commonText && 
-                   translationEnabled && 
-                   !message.receiverText && (
-                    <Languages
-                      className={`w-5 h-5 cursor-pointer hover:scale-110 transition-transform text-blue-500 ${
-                        translatingMessages.has(message._id) ? 'animate-spin' : ''
-                      }`}
-                      onClick={() => handleTranslateForReceiver(message._id)}
-                      title="Translate message"
-                    />
-                  )}
-                  
+                  {message.senderId !== authUser._id &&
+                    message.commonText &&
+                    translationEnabled &&
+                    !message.receiverText && (
+                      <Languages
+                        className={`w-5 h-5 cursor-pointer hover:scale-110 transition-transform text-blue-500 ${translatingMessages.has(message._id) ? 'animate-spin' : ''
+                          }`}
+                        onClick={() => handleTranslateForReceiver(message._id)}
+                        title="Translate message"
+                      />
+                    )}
+
                   {message.senderId === authUser._id && (
                     <Pencil
                       className="w-5 h-5 text-blue-500 cursor-pointer hover:scale-110 transition-transform"
@@ -326,10 +323,7 @@ const ChatContainer = () => {
                       {getDisplayText(message)}
                     </p>
                   </Linkify>
-                  
 
-               
-                  
                   {/* Show translation loading indicator */}
                   {translatingMessages.has(message._id) && (
                     <div className="text-xs opacity-60 mt-1 flex items-center gap-1">
