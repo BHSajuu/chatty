@@ -2,7 +2,7 @@ import { Image, Send, X, Mic, StopCircle } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useChatStore } from "../store/useChatStore";
-import { useTranslationStore } from "../store/useTranslationStore";
+import { useTranslationStore } from "../store/useTranslationStore"; // Added translation store
 import { useReactMediaRecorder } from "react-media-recorder";
 import CustomAudioPlayer from "./CustomAudioPlayer";
 
@@ -85,14 +85,11 @@ const MessageInput = () => {
       }
 
       let messageText = text.trim();
-      let originalLanguage = "English"; // Default assumption
       
-      // Auto-translate outgoing message if translation is enabled and preferred language is not English
+      // Auto-translate outgoing message if translation is enabled
       if (translationEnabled && messageText && preferredLanguage !== "English") {
         const translatedText = await translateMessage(messageText, preferredLanguage);
         if (translatedText) {
-          // Store the original language for database
-          originalLanguage = "English"; // Assuming user types in English
           messageText = translatedText;
         }
       }
@@ -101,7 +98,6 @@ const MessageInput = () => {
         text: messageText,
         image: imagePreview,
         audio: audioData,
-        originalLanguage: originalLanguage // Send original language to backend
       });
 
       // Clear inputs
@@ -208,10 +204,7 @@ const MessageInput = () => {
           <input
             type="text"
             className="w-full input input-bordered rounded-lg input-sm sm:input-md"
-            placeholder={translationEnabled && preferredLanguage !== "English" ? 
-              `Type in any language (will be translated to ${preferredLanguage})...` : 
-              "Type a message..."
-            }
+            placeholder={translationEnabled ? `Type in any language (will be translated to ${preferredLanguage})...` : "Type a message..."}
             value={text}
             onChange={(e) => setText(e.target.value)}
           />

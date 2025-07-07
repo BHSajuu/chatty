@@ -9,10 +9,6 @@ export const useChatStore = create((set, get) => ({
   selectedUser: null,
   isUsersLoading: false,
   isMessagesLoading: false,
-  
-  // Track when conversation was opened for translation purposes
-  conversationOpenedAt: null,
-  lastMessageCountWhenOpened: 0,
 
   getUsers: async () => {
     set({ isUsersLoading: true });
@@ -30,19 +26,13 @@ export const useChatStore = create((set, get) => ({
     set({ isMessagesLoading: true });
     try {
       const res = await axiosInstance.get(`/messages/${userId}`);
-      set({ 
-        messages: res.data,
-        // Track when conversation was opened and how many messages existed
-        conversationOpenedAt: new Date(),
-        lastMessageCountWhenOpened: res.data.length
-      });
+      set({ messages: res.data });
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
       set({ isMessagesLoading: false });
     }
   },
-
   sendMessage: async (messageData) => {
     const { selectedUser, messages } = get();
     try {
@@ -78,14 +68,7 @@ export const useChatStore = create((set, get) => ({
     socket.off("newMessage");
   },
 
-  setSelectedUser: (selectedUser) => {
-    set({ 
-      selectedUser,
-      // Reset conversation tracking when switching users
-      conversationOpenedAt: null,
-      lastMessageCountWhenOpened: 0
-    });
-  },
+  setSelectedUser: (selectedUser) => set({ selectedUser }),
 
   deleteMessage: async (messageId) =>{
     try {
@@ -135,17 +118,8 @@ export const useChatStore = create((set, get) => ({
       toast.error(error.response.data.error);
       
     }
-  },
-
-  // Helper function to check if a message is "new" (arrived after conversation was opened)
-  isNewMessage: (messageIndex) => {
-    const { lastMessageCountWhenOpened } = get();
-    return messageIndex >= lastMessageCountWhenOpened;
-  },
-
-  // Helper function to get only new messages that need translation
-  getNewMessagesForTranslation: () => {
-    const { messages, lastMessageCountWhenOpened } = get();
-    return messages.slice(lastMessageCountWhenOpened);
   }
+
 }));
+
+

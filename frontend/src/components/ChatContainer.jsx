@@ -2,11 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { formatMessageTime } from "../lib/utils";
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
-import { useTranslationStore } from "../store/useTranslationStore";
+import { useTranslationStore } from "../store/useTranslationStore"; // Added translation store
 import ChatHeader from "./ChatHeader";
 import MessageInput from "./MessageInput";
 import MessageSkeleton from "./skeletons/MessageSkeleton";
-import { Check, Pencil, Trash2, X, Languages } from "lucide-react";
+import { Check, Pencil, Trash2, X, Languages } from "lucide-react"; // Added Languages icon
 import CustomAudioPlayer from "./CustomAudioPlayer";
 import Linkify from "react-linkify";
 import ConfirmationModal from "./ConfirmationModal";
@@ -21,8 +21,6 @@ const ChatContainer = () => {
     unsubscribeFromMessages,
     deleteMessage,
     editMessageText,
-    conversationOpenedAt, // Track when conversation was opened
-    isNewMessage, // Helper to check if message is new
   } = useChatStore();
   const { authUser } = useAuthStore();
   
@@ -31,9 +29,7 @@ const ChatContainer = () => {
     translationEnabled, 
     preferredLanguage, 
     translateMessage, 
-    isTranslating,
-    getCachedTranslations,
-    translationCache
+    isTranslating 
   } = useTranslationStore();
   
   const messageEndRef = useRef(null);
@@ -47,9 +43,6 @@ const ChatContainer = () => {
   // Translation state for each message
   const [translatedMessages, setTranslatedMessages] = useState({});
   const [translatingMessageId, setTranslatingMessageId] = useState(null);
-  
-  // Track which messages have been processed for translation
-  const [processedMessageIds, setProcessedMessageIds] = useState(new Set());
 
   useEffect(() => {
     getMessages(selectedUser._id);
@@ -68,84 +61,21 @@ const ChatContainer = () => {
     }
   }, [messages]);
 
-  // Load cached translations for existing messages when conversation opens
+  // Auto-translate incoming messages if translation is enabled
   useEffect(() => {
-    if (translationEnabled && messages.length > 0 && preferredLanguage !== "English") {
-      loadCachedTranslationsForExistingMessages();
-    }
-  }, [messages.length, translationEnabled, preferredLanguage, selectedUser._id]);
-
-  // Auto-translate only NEW incoming messages (messages that arrive after conversation was opened)
-  useEffect(() => {
-    if (!translationEnabled || preferredLanguage === "English") return;
-
-    // Process only messages that:
-    // 1. Are from other users (not current user)
-    // 2. Have text content
-    // 3. Are NEW (arrived after conversation was opened)
-    // 4. Haven't been processed yet
-    messages.forEach((message, index) => {
-      const isFromOtherUser = message.senderId !== authUser._id;
-      const hasText = message.text;
-      const isNewMsg = isNewMessage(index);
-      const notProcessedYet = !processedMessageIds.has(message._id);
-      const notAlreadyTranslated = !translatedMessages[message._id];
-
-      if (isFromOtherUser && hasText && isNewMsg && notProcessedYet && notAlreadyTranslated) {
-        console.log(`🔄 Auto-translating NEW message: "${message.text}" (Message ID: ${message._id})`);
-        handleTranslateMessage(message._id, message.text, true); // true indicates auto-translation
-        
-        // Mark as processed to avoid re-processing
-        setProcessedMessageIds(prev => new Set([...prev, message._id]));
+    if (translationEnabled && messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      
+      // Only translate messages from other users (not from current user)
+      if (lastMessage.senderId !== authUser._id && lastMessage.text && !translatedMessages[lastMessage._id]) {
+        handleTranslateMessage(lastMessage._id, lastMessage.text);
       }
-    });
-  }, [messages, translationEnabled, preferredLanguage, authUser._id]);
-
-  // Load cached translations from database for existing messages (not new ones)
-  const loadCachedTranslationsForExistingMessages = async () => {
-    const existingMessageIds = messages
-      .filter((msg, index) => {
-        // Only load cached translations for existing messages (not new ones)
-        return msg.senderId !== authUser._id && 
-               msg.text && 
-               !isNewMessage(index); // Only existing messages, not new ones
-      })
-      .map(msg => msg._id);
-    
-    if (existingMessageIds.length === 0) return;
-
-    console.log(`📥 Loading cached translations for ${existingMessageIds.length} existing messages`);
-
-    try {
-      const cachedTranslations = await getCachedTranslations(existingMessageIds, preferredLanguage);
-      
-      // Update local state with cached translations
-      const newTranslatedMessages = { ...translatedMessages };
-      Object.entries(cachedTranslations).forEach(([messageId, translation]) => {
-        newTranslatedMessages[messageId] = translation;
-        console.log(`✅ Loaded cached translation for message ${messageId}: "${translation}"`);
-      });
-      
-      setTranslatedMessages(newTranslatedMessages);
-    } catch (error) {
-      console.error("Failed to load cached translations:", error);
     }
-  };
+  }, [messages, translationEnabled, preferredLanguage]);
 
   const handleDeleteMessage = async (messageId) => {
     try {
       await deleteMessage(messageId);
-      // Remove from translated messages state
-      const newTranslatedMessages = { ...translatedMessages };
-      delete newTranslatedMessages[messageId];
-      setTranslatedMessages(newTranslatedMessages);
-      
-      // Remove from processed messages
-      setProcessedMessageIds(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(messageId);
-        return newSet;
-      });
     } catch (error) {
       console.error("Failed to delete message:", error);
     }
@@ -156,54 +86,24 @@ const ChatContainer = () => {
       await editMessageText(messageId, text);
       setEditingMessageId(null);
       setEditedText("");
-      
-      // Clear translation for edited message since content changed
-      const newTranslatedMessages = { ...translatedMessages };
-      delete newTranslatedMessages[messageId];
-      setTranslatedMessages(newTranslatedMessages);
-      
-      // Remove from processed messages so it can be re-translated if needed
-      setProcessedMessageIds(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(messageId);
-        return newSet;
-      });
     } catch (error) {
       console.error("Failed to edit message:", error);
     }
   };
 
-  // Handle manual or automatic translation of a specific message
-  const handleTranslateMessage = async (messageId, text, isAutoTranslation = false) => {
+  // Handle manual translation of a specific message
+  const handleTranslateMessage = async (messageId, text) => {
     if (!text || translatedMessages[messageId]) return;
-    
-    // Check cache first
-    const cacheKey = `${messageId}-${preferredLanguage}`;
-    if (translationCache.has(cacheKey)) {
-      setTranslatedMessages(prev => ({
-        ...prev,
-        [messageId]: translationCache.get(cacheKey)
-      }));
-      console.log(`💾 Using cached translation for message ${messageId}`);
-      return;
-    }
     
     setTranslatingMessageId(messageId);
     
-    if (isAutoTranslation) {
-      console.log(`🤖 Auto-translating message: "${text}" to ${preferredLanguage}`);
-    } else {
-      console.log(`👆 Manual translation requested for: "${text}" to ${preferredLanguage}`);
-    }
-    
-    const translatedText = await translateMessage(text, preferredLanguage, messageId);
+    const translatedText = await translateMessage(text, preferredLanguage);
     
     if (translatedText) {
       setTranslatedMessages(prev => ({
         ...prev,
         [messageId]: translatedText
       }));
-      console.log(`✅ Translation completed: "${text}" → "${translatedText}"`);
     }
     
     setTranslatingMessageId(null);
@@ -218,12 +118,6 @@ const ChatContainer = () => {
     window.open(currentLink, "_blank");
     setModalOpen(false);
   };
-
-  // Reset processed messages when switching conversations
-  useEffect(() => {
-    setProcessedMessageIds(new Set());
-    setTranslatedMessages({});
-  }, [selectedUser._id]);
 
   if (isMessagesLoading) {
     return (
@@ -263,7 +157,7 @@ const ChatContainer = () => {
                       className={`w-5 h-5 cursor-pointer hover:scale-110 transition-transform ${
                         translatedMessages[message._id] ? 'text-green-500' : 'text-blue-500'
                       } ${translatingMessageId === message._id ? 'animate-spin' : ''}`}
-                      onClick={() => handleTranslateMessage(message._id, message.text, false)} // Manual translation
+                      onClick={() => handleTranslateMessage(message._id, message.text)}
                       title={translatedMessages[message._id] ? 'Translated' : 'Translate message'}
                     />
                   )}
@@ -301,10 +195,6 @@ const ChatContainer = () => {
               <time className="text-xs opacity-50 ml-1">
                 {formatMessageTime(message.createdAt)}
               </time>
-              {/* Debug indicator for new messages */}
-              {isNewMessage(idx) && (
-                <span className="text-xs bg-green-500 text-white px-1 rounded ml-2">NEW</span>
-              )}
             </div>
 
             <div className="chat-bubble w-[220px] lg:w-auto flex flex-col">

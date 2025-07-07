@@ -1,31 +1,15 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import User from "../models/user.model.js";
-import Message from "../models/message.model.js"; // Added Message model
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 export const translateMessage = async (req, res) => {
   try {
-    const { text, targetLanguage, messageId } = req.body; // Added messageId
-    const userId = req.user._id;
+    const { text, targetLanguage } = req.body;
+    const userId = req.user._id; 
 
     if (!text || !targetLanguage) {
       return res.status(400).json({ message: "Text and target language are required" });
-    }
-
-    // If messageId is provided, check if translation already exists in database
-    if (messageId) {
-      const message = await Message.findById(messageId);
-      if (message && message.translations.has(targetLanguage)) {
-        // Return cached translation without consuming API quota
-        return res.status(200).json({
-          originalText: text,
-          translatedText: message.translations.get(targetLanguage),
-          targetLanguage,
-          cached: true, // Indicate this was from cache
-          remainingTranslations: await getRemainingTranslations(userId)
-        });
-      }
     }
 
     // Check user's daily translation limit
@@ -57,43 +41,21 @@ export const translateMessage = async (req, res) => {
     const response = await result.response;
     const translatedText = response.text().trim();
 
-    // Increment user's daily translation count (only for new translations)
+    // Increment user's daily translation count
     user.dailyTranslationCount += 1;
     await user.save();
-
-    // Store translation in database if messageId is provided
-    if (messageId) {
-      const message = await Message.findById(messageId);
-      if (message) {
-        message.translations.set(targetLanguage, translatedText);
-        await message.save();
-      }
-    }
 
     res.status(200).json({
       originalText: text,
       translatedText,
       targetLanguage,
-      cached: false, // Indicate this was a new translation
       remainingTranslations: 15 - user.dailyTranslationCount
     });
 
   } catch (error) {
-    console.error("Translation error:", error);
+    console.error("Translation error from backend:", error);
     res.status(500).json({ message: "Translation failed. Please try again." });
   }
-};
-
-// Helper function to get remaining translations
-const getRemainingTranslations = async (userId) => {
-  const user = await User.findById(userId);
-  const today = new Date().toDateString();
-  
-  if (user.lastTranslationDate !== today) {
-    return 15; // Full quota for new day
-  }
-  
-  return 15 - user.dailyTranslationCount;
 };
 
 export const getUserTranslationStats = async (req, res) => {
@@ -145,31 +107,5 @@ export const updateTranslationSettings = async (req, res) => {
   } catch (error) {
     console.error("Error updating translation settings:", error);
     res.status(500).json({ message: "Failed to update translation settings" });
-  }
-};
-
-// New endpoint to get cached translations for multiple messages
-export const getCachedTranslations = async (req, res) => {
-  try {
-    const { messageIds, targetLanguage } = req.body;
-    
-    if (!messageIds || !Array.isArray(messageIds) || !targetLanguage) {
-      return res.status(400).json({ message: "Message IDs array and target language are required" });
-    }
-
-    const messages = await Message.find({ _id: { $in: messageIds } });
-    const cachedTranslations = {};
-
-    messages.forEach(message => {
-      if (message.translations.has(targetLanguage)) {
-        cachedTranslations[message._id] = message.translations.get(targetLanguage);
-      }
-    });
-
-    res.status(200).json({ cachedTranslations });
-
-  } catch (error) {
-    console.error("Error getting cached translations:", error);
-    res.status(500).json({ message: "Failed to get cached translations" });
   }
 };
