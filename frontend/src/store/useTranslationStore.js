@@ -94,5 +94,5 @@ export const useTranslationStore = create((set, get) => ({
   // Set preferred language
   setPreferredLanguage: async (language) => {
     await get().updateTranslationSettings({ preferredLanguage: language });
-  }
+  }  
 }));

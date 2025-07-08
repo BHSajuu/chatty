@@ -10,9 +10,13 @@ export default function ConfirmationModal({ isOpen, link, onClose, onJoin }) {
         <div className="flex justify-between gap-5">
           <button
             className="btn btn-outline text-green-300 hover:cursor-pointer"
-            onClick={() => {
-              navigator.clipboard.writeText(link);
-              toast.success("Link copied!");
+            onClick={async () => {
+              try {
+                await navigator.clipboard.writeText(link);
+                toast.success("Link copied!");
+              } catch (err) {
+                toast.error("Failed to copy link.");
+              }
             }}
           >
             Copy link
