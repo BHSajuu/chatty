@@ -40,7 +40,7 @@ export const useTranslationStore = create((set, get) => ({
         translationEnabled: settings.translationEnabled !== undefined ? settings.translationEnabled : get().translationEnabled,
         preferredLanguage: settings.preferredLanguage || get().preferredLanguage
       });
-      toast.success("Translation settings updated successfully");
+      toast.success(`Auto-Translation ${settings.translationEnabled ? 'activated' : 'deactivated'} successfully!`);
     } catch (error) {
       toast.error("Failed to update translation settings");
       console.error("Translation settings update error:", error);

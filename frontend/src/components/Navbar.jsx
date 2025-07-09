@@ -8,7 +8,7 @@ import { useCallStore } from "../store/useCallStore";
 const Navbar = () => {
   const { logout, authUser } = useAuthStore();
 
-  const { translationEnabled, preferredLanguage } = useTranslationStore();
+  const { translationEnabled, preferredLanguage, toggleTranslation } = useTranslationStore();
   const {isActive} = useCallStore();
 
   return (
@@ -29,7 +29,7 @@ const Navbar = () => {
           </div>
 
           <div className="hidden lg:block relative top-8 left-30 hover:cursor-pointer">
-            {translationEnabled && !isActive && <TranslationStatus translationEnabled={translationEnabled} preferredLanguage={preferredLanguage} />}
+            {translationEnabled && !isActive && <TranslationStatus onClick={() => toggleTranslation()} translationEnabled={translationEnabled} preferredLanguage={preferredLanguage}  />}
           </div>
           <div className="lg:hidden">
             <div className="flex items-center space-x-1 mt-1">

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Languages, Check, Sparkles, Globe } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 
-const TranslationStatus = ({ translationEnabled, preferredLanguage }) => {
+const TranslationStatus = ({ translationEnabled, preferredLanguage, onClick }) => {
 
       const [isVisible, setIsVisible] = useState(false);
       const [animationState, setAnimationState] = useState('loading');
@@ -20,11 +21,13 @@ const TranslationStatus = ({ translationEnabled, preferredLanguage }) => {
             }
       }, [translationEnabled]);
 
+
+      
       if (!isVisible) return null;
 
       return (
-            <div className=" transition-all duration-500 ease-out">
-                  <div className="group relative">
+            <div  onClick={onClick}  className=" transition-all duration-500 ease-out">
+                  <div  className="group relative">
                         {/* Animated background glow */}
                         <div className="absolute -inset-2 bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-500 rounded-2xl blur-lg opacity-60 group-hover:opacity-80 animate-pulse"></div>
 
