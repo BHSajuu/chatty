@@ -16,8 +16,10 @@ import "@stream-io/video-react-sdk/dist/css/styles.css";
 import toast from "react-hot-toast";
 import { axiosInstance } from "../lib/axios";
 import { useAuthStore } from "../store/useAuthStore";
-import { Phone, Video } from "lucide-react";
+import { Phone } from "lucide-react";
 import { useCallStore } from "../store/useCallStore";
+import Hyperspeed from "../components/Backgrounds/Hyperspeed/Hyperspeed";
+import { useChatStore } from "../store/useChatStore";
 
 const STREAM_API_KEY = import.meta.env.VITE_STREAM_API_KEY;
 
@@ -30,6 +32,7 @@ function CallPage() {
   const [isConnecting, setIsConnecting] = useState(true);
 
   const { isLoading, authUser } = useAuthStore();
+  const {selectedUser} = useChatStore();
 
   const { callId: storedId, join, end } = useCallStore();
 
@@ -97,16 +100,46 @@ function CallPage() {
 
   if (isLoading || isConnecting) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-br from-indigo-900 to-purple-900">
-        <div className="animate-pulse rounded-full p-6 bg-indigo-800 mb-4">
-          <div className="bg-indigo-700 rounded-full p-4">
-            <Video className="text-white w-12 h-12" />
-          </div>
-        </div>
-        <p className="text-white text-xl font-medium">Connecting to call...</p>
-        <div className="mt-6 h-1 w-64 bg-indigo-800 rounded-full overflow-hidden">
-          <div className="animate-pulse h-full w-1/2 bg-indigo-500"></div>
-        </div>
+      <div className="relative h-[80vh] ">
+        <Hyperspeed
+          effectOptions={{
+            onSpeedUp: () => { },
+            onSlowDown: () => { },
+            distortion: 'turbulentDistortion',
+            length: 400,
+            roadWidth: 10,
+            islandWidth: 2,
+            lanesPerRoad: 4,
+            fov: 90,
+            fovSpeedUp: 150,
+            speedUp: 2,
+            carLightsFade: 0.4,
+            totalSideLightSticks: 20,
+            lightPairsPerRoadWay: 40,
+            shoulderLinesWidthPercentage: 0.05,
+            brokenLinesWidthPercentage: 0.1,
+            brokenLinesLengthPercentage: 0.5,
+            lightStickWidth: [0.12, 0.5],
+            lightStickHeight: [1.3, 1.7],
+            movingAwaySpeed: [60, 80],
+            movingCloserSpeed: [-120, -160],
+            carLightsLength: [400 * 0.03, 400 * 0.2],
+            carLightsRadius: [0.05, 0.14],
+            carWidthPercentage: [0.3, 0.5],
+            carShiftX: [-0.8, 0.8],
+            carFloorSeparation: [0, 5],
+            colors: {
+              roadColor: 0x080808,
+              islandColor: 0x0a0a0a,
+              background: 0x000000,
+              shoulderLines: 0xFFFFFF,
+              brokenLines: 0xFFFFFF,
+              leftCars: [0xD856BF, 0x6750A2, 0xC247AC],
+              rightCars: [0x03B3C3, 0x0E5EA5, 0x324555],
+              sticks: 0x03B3C3,
+            }
+          }}
+        />
       </div>
     );
   }
@@ -193,7 +226,7 @@ export const MyParticipantList = ({ participants }) => {
     return () => window.removeEventListener("resize", handler);
   }, []);
 
-   // Mobile: full-screen
+  // Mobile: full-screen
   if (isMobile) {
     return (
       <div className="absolute m-1 inset-0 z-10">
@@ -226,11 +259,10 @@ export const MyFloatingLocalParticipant = ({ participant }) => {
 
   return (
     <div
-      className={`absolute rounded-lg overflow-hidden shadow-xl  bg-opacity-60 ${
-        isMobile
-          ? "bottom-12 right-4 w-44 h-44 rounded-4xl"
-          : "top-16 left-4 w-60 h-40"
-      }`}
+      className={`absolute rounded-lg overflow-hidden shadow-xl  bg-opacity-60 ${isMobile
+        ? "bottom-12 right-4 w-44 h-44 rounded-4xl"
+        : "top-16 left-4 w-60 h-40"
+        }`}
       style={{ zIndex: 20 }}
     >
       <ParticipantView participant={participant} />
